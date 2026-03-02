@@ -7,6 +7,7 @@ import LogoMarquee from "@/components/about/Section3";
 import ContactForm from "@/components/ContactForm";
 import FAQSection from "@/components/Faqs";
 import Contact from "@/components/contact";
+import Footer from "@/components/Footer";
 
 const About = () => {
   return (
@@ -23,6 +24,7 @@ const About = () => {
           <Contact/>
           {/* <ContactForm/> */}
       </GridSmallBackground>
+      <Footer/>
     </>
   );
 };

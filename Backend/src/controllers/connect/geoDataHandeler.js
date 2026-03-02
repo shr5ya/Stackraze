@@ -26,7 +26,7 @@ async function handleGetNearbyUsers(req, res) {
           $centerSphere: [[longitude, latitude], radiusInRadians],
         },
       },
-    }).select("_id name username avatar location");
+    }).select("_id name username avatar location about");
 
     return res.status(200).json({ count: users.length, users });
   } catch (error) {

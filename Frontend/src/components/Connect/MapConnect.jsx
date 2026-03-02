@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Map,
   MapMarker,
@@ -13,46 +13,31 @@ import { API_URL } from "../../config/api";
 
 const theme = localStorage.getItem("theme");
 
-function MapConnect({ userCoordinates }) {
-  const [nearbyUsers, setNearbyUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
+function MapConnect({ userCoordinates, debouncedRange, nearbyUsers = [] }) {
+  const mapRef = useRef(null);
 
+  // Adjust map zoom based on selected range
   useEffect(() => {
-    const fetchNearbyUsers = async () => {
-      try {
-        if (!userCoordinates) return;
-        setLoading(true);
-        const token = localStorage.getItem("token");
-        // userCoordinates is [lng, lat]
-        const [lng, lat] = userCoordinates;
-        const res = await fetch(`${API_URL}/user/connect/nearby?lat=${lat}&lng=${lng}&rangeKm=50`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+    if (mapRef.current) {
+      let newZoom;
+      if (debouncedRange <= 5) newZoom = 13;
+      else if (debouncedRange <= 10) newZoom = 12;
+      else if (debouncedRange <= 25) newZoom = 11;
+      else if (debouncedRange <= 50) newZoom = 9;
+      else if (debouncedRange <= 100) newZoom = 8;
+      else if (debouncedRange <= 250) newZoom = 7;
+      else newZoom = 6;
 
-        if (res.ok) {
-          const data = await res.json();
-          setNearbyUsers(data.users || []);
-        } else {
-          console.error("Failed to fetch nearby users");
-        }
-      } catch (error) {
-        console.error("Error fetching nearby users:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchNearbyUsers();
-  }, [userCoordinates]);
+      mapRef.current.flyTo({ center: [userCoordinates[1], userCoordinates[0]], zoom: newZoom, duration: 1000 });
+    }
+  }, [debouncedRange, userCoordinates]);
 
   // If no userCoordinates, we can just return null or a message, but parent component ensures it's present.
   if (!userCoordinates) return null;
 
   return (
-    <div className="h-96 w-full">
-      <Map center={[userCoordinates[1], userCoordinates[0]]} zoom={9}>
+    <div className="relative h-96 w-full rounded-lg overflow-hidden border border-neutral-200 dark:border-neutral-800">
+      <Map ref={mapRef} center={[userCoordinates[1], userCoordinates[0]]} zoom={9}>
         {nearbyUsers.map((user, index) => {
           // Check if user has the default mongoose avatar or no avatar
           const isDefaultUiAvatar = user.avatar && user.avatar.includes("ui-avatars.com");
@@ -118,13 +103,15 @@ function MapConnect({ userCoordinates }) {
               </MarkerPopup>
             </MapMarker>
           );
-        })}
-        <MapControls className="h-50 w-8"
-          position="bottom-right"
-          showZoom
-          showCompass
-          showFullscreen
-        />
+        })
+        }
+        <MapControls
+  className="w-8 text-neutral-700 dark:text-neutral-200"
+  position="bottom-right"
+  showZoom
+  showCompass
+  showFullscreen
+/>
 
         {/* special marker for the current user */}
         <MapMarker
@@ -146,8 +133,8 @@ function MapConnect({ userCoordinates }) {
             </div>
           </MarkerPopup>
         </MapMarker>
-      </Map>
-    </div>
+      </Map >
+    </div >
   );
 }
 

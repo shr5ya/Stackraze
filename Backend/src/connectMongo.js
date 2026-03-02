@@ -2,7 +2,9 @@ const mongoose = require('mongoose');
 
 async function connectToMongoDB(url) {
     return mongoose.connect(url, {
-        dbName: "anchor",   
+        dbName: "anchor",
+        tls: true,
+        tlsAllowInvalidCertificates: true,
     });
 }
 

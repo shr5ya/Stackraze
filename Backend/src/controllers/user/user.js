@@ -53,7 +53,7 @@ async function handleUserLogin(req, res) {
     }
 
     const user = await User.findOne({ email })
-      .select("_id name username email avatar password")
+      .select("_id name username email avatar password about")
       .lean();
 
     if (!user || user.password !== password) {
@@ -72,6 +72,7 @@ async function handleUserLogin(req, res) {
         username: user.username,
         email: user.email,
         avatar: user.avatar,
+        about: user.about
       },
     });
   } catch (error) {
@@ -94,13 +95,14 @@ async function handleUserData(req, res) {
 
 async function handleCreateContact(req, res) {
   try {
-    const { name, phoneNumber, email, message } = req.body;
+    const { name, phoneNumber, email, message, type } = req.body;
 
     const newContact = await Contact.create({
       name,
       phoneNumber,
       email,
       message,
+      type,
     });
 
     res.status(201).json({
@@ -118,9 +120,107 @@ async function handleCreateContact(req, res) {
   }
 };
 
+async function handleUpdateUserData(req, res) {
+  try {
+    const userId = req.user.id;
+    const updateFields = req.body || {};
+
+    const allowedFields = ["name", "username", "email", "avatar", "about", "location", "password"];
+    const updates = {};
+
+    for (const key of allowedFields) {
+      if (updateFields[key] !== undefined) {
+        updates[key] = updateFields[key];
+      }
+    }
+
+    if (Object.keys(updates).length === 0) {
+      return res.status(400).json({ message: "No valid fields provided to update" });
+    }
+
+    if (updates.email) {
+      const existingEmail = await User.exists({ email: updates.email, _id: { $ne: userId } });
+      if (existingEmail) {
+        return res.status(409).json({ message: "Email already taken" });
+      }
+    }
+
+    if (updates.username) {
+      const existingUsername = await User.exists({ username: updates.username, _id: { $ne: userId } });
+      if (existingUsername) {
+        return res.status(409).json({ message: "Username already taken" });
+      }
+    }
+
+    // Handle password change specifically for security
+    if (updates.password) {
+      if (!updateFields.oldPassword) {
+        return res.status(400).json({ message: "oldPassword is required to change the password" });
+      }
+
+      // Fetch the user's current password
+      const currentUser = await User.findById(userId).select("password").lean();
+      if (!currentUser || currentUser.password !== updateFields.oldPassword) {
+        return res.status(401).json({ message: "Incorrect old password" });
+      }
+
+      // Optional: Since there is a minlength of 6 on the schema, we can enforce it explicitly
+      if (updates.password.length < 6) {
+        return res.status(400).json({ message: "Password must be at least 6 characters long" });
+      }
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { $set: updates },
+      { new: true, runValidators: true }
+    ).select("-password").lean();
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.status(200).json({
+      message: "User data updated successfully",
+      userData: updatedUser
+    });
+  } catch (error) {
+    console.error("Error updating user data:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+async function handleGetProfileByUsername(req, res) {
+  const USERNAME_REGEX = /^[a-zA-Z0-9_]{3,30}$/;
+  try {
+    const normalized = String(req.query.username || "").trim().toLowerCase();
+
+    if (!USERNAME_REGEX.test(normalized)) {
+      return res.status(400).json({ error: "Invalid username" });
+    }
+
+    const user = await User.findOne(
+      { username: normalized },
+      "name username about avatar"
+    ).lean();
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    return res.status(200).json(user);
+  } catch (err) {
+    console.error("Error fetching profile:", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+
 module.exports = {
   handleUserSignup,
   handleUserLogin,
   handleUserData,
-  handleCreateContact
+  handleCreateContact,
+  handleUpdateUserData,
+  handleGetProfileByUsername
 };

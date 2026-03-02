@@ -1,13 +1,13 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import { Home, About, Auth, Login, Signup, Connect, Profile } from './pages';
+import { Home, About, Auth, Login, Signup, Connect, Profile, Contact } from './pages';
 import ProtectedRoute, { PublicRoute } from './components/ProtectedRoute';
 import Navbar from './components/header/navbar';
 
 const App = () => {
   return (
     <div className='App'>
-      <Navbar/>
+      <Navbar />
       <Routes>
         {/* Protected Home */}
         <Route path='/' element={
@@ -44,11 +44,15 @@ const App = () => {
           </ProtectedRoute>
         } />
 
-        <Route path='/profile' element={
+        {/* Contact page */}
+        <Route path='/contact' element={
           <ProtectedRoute>
-            <Profile />
+            <Contact />
           </ProtectedRoute>
         } />
+
+        {/* Public Profile page */}
+        <Route path='/profile/:username' element={<Profile />} />
 
         {/* Public About Route */}
         <Route path='/about' element={<About />} />

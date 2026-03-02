@@ -1,5 +1,4 @@
 # Anchor Backend API Routes
-Guide
 
 This document lists all currently available backend routes from `Backend/src/routes`.
 

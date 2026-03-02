@@ -10,7 +10,7 @@ const contactSchema = new mongoose.Schema(
     },
     phoneNumber: {
       type: String,
-      required: true,
+      // required: true,
       trim: true,
     },
     email: {
@@ -26,6 +26,11 @@ const contactSchema = new mongoose.Schema(
       trim: true,
       minlength: 5,
     },
+    type:{
+      type:String,
+      enum:['CONTACT','FEEDBACK','SUGGESTION'],
+      default:"CONTACT"
+    }
   },
   { timestamps: true }
 );

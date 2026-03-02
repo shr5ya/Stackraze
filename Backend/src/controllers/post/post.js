@@ -146,10 +146,39 @@ async function handleLikePost(req, res) {
   }
 }
 
+async function handleGetUSerPosts(req,res) {
+  try {
+    const username = String(req.params.username || "").trim().toLowerCase();
+
+    if (!username) {
+      return res.status(400).json({ message: "Username is required" });
+    }
+
+    const user = await User.findOne({ username }).select("_id").lean();
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const posts = await Post.find({ author: user._id })
+      .sort({ createdAt: -1 })
+      .populate("author", "username name avatar");
+
+    return res.status(200).json({
+      message: "User posts fetched successfully",
+      posts,
+    });
+  } catch (error) {
+    console.error("Error fetching user posts:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
 
 module.exports = {
   handleCreatePost,
   handleGetAllPosts,
   handleDeletePost,
-  handleLikePost
+  handleLikePost,
+  handleGetUSerPosts
 };

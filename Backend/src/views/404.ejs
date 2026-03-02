@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>404 - Page Not Found</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #ffffff;
+            text-align: center;
+        }
+
+        .error-code {
+            font-size: 140px;
+            font-weight: 800;
+            color: #333333;
+            text-shadow: 0 8px 14px rgba(0,0,0,0.18);
+            margin: 0;
+        }
+
+        .error-title {
+            font-size: 20px;
+            color: #555;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .error-message {
+            margin-top: 6px;
+            font-size: 14px;
+            color: #888;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <h1 class="error-code">404</h1>
+        <p class="error-title">PAGE NOT FOUND</p>
+        <p class="error-message"><%= message %></p>
+    </div>
+</body>
+</html>

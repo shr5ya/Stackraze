@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Heart, MessageCircle, Bookmark, Send, MoreHorizontal, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import PostMoreOptions from './PostMoreOptions';
 import PostContent from './PostContent';
 import { useAuth } from '../../context/AuthContext';
@@ -47,8 +48,11 @@ function Post({ post }) {
     // Format time ago
     const getTimeAgo = (dateString) => {
         if (!dateString) return '';
-        // Handle $date object if present
-        const dateVal = typeof dateString === 'object' && dateString.$date ? dateString.$date : dateString;
+
+        const dateVal =
+            typeof dateString === 'object' && dateString.$date
+                ? dateString.$date
+                : dateString;
 
         const now = new Date();
         const date = new Date(dateVal);
@@ -58,7 +62,9 @@ function Post({ post }) {
         if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`;
         if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
         if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)} days ago`;
-        return date.toLocaleDateString();
+
+        const weeks = Math.floor(diffInSeconds / 604800);
+        return `${weeks} week${weeks > 1 ? 's' : ''} ago`;
     };
 
     // Get author initials
@@ -170,7 +176,13 @@ function Post({ post }) {
                             {authorName}
                         </span>
                         <span className="text-xs text-neutral-500 dark:text-neutral-400">
-                            @{authorUsername} · {getTimeAgo(createdAt)}
+                            <Link
+                                to={`/profile/${authorUsername}`}
+                                className="hover:underline cursor-pointer"
+                            >
+                                @{authorUsername}
+                            </Link>
+                            {" · "}{getTimeAgo(createdAt)}
                         </span>
                     </div>
                 </div>
