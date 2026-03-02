@@ -1,4 +1,4 @@
-# Anchor Backend API Routes
+# Algyn Backend API Routes
 
 This document lists all currently available backend routes from `Backend/src/routes`.
 
