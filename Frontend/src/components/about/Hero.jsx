@@ -24,10 +24,10 @@ function Hero() {
           <img
             src={community}
             className="h-10 sm:h-12 md:h-14 lg:h-16"
-            alt="Anchor logo"
+            alt="Algyñ logo"
           />
 
-          <p>Anchor</p>
+          <p>Algyñ</p>
         </div>
       </div>
 

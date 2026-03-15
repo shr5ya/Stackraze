@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { AnimatedThemeToggler } from '../ui/animated-theme-toggler';
 import Profile from './Profile';
-import Logo from "../../assets/logo.png";
+import Logo from "../../assets/Algyn.png";
 
 const Navbar = () => {
   return (
@@ -12,8 +12,8 @@ const Navbar = () => {
       <Link to="/">
         <div className='flex gap-4 items-center'>
           <div className="md:pl-10 flex items-center gap-2">
-            <img src={Logo} className='h-10 md:h-12 dark:invert' alt="logo" />
-            <p className="text-2xl font-semibold text-black dark:text-white">Anchor</p>
+            <img src={Logo} className='w-25 ' alt="logo" />
+            {/* <p className="text-2xl font-semibold text-black dark:text-white">Algyñ</p> */}
           </div>
         </div>
       </Link>

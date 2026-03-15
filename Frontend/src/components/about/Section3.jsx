@@ -46,7 +46,7 @@ function LogoMarquee() {
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 z-20">
           <img
             src={Phone}
-            alt="Anchor app on phone"
+            alt="Algyñ app on phone"
             className="h-52 md:h-72 object-contain drop-shadow-2xl dark:drop-shadow-[0_20px_40px_rgba(255,255,255,0.08)]"
           />
         </div>
@@ -60,7 +60,7 @@ function LogoMarquee() {
           </p>
           <p className="mt-3 text-sm md:text-base text-gray-500 dark:text-zinc-400 leading-relaxed">
             Discover what's happening in tech — what's new, what's trending, and
-            how the world is evolving every day. At Anchor, we believe it's a
+            how the world is evolving every day. At Algyñ, we believe it's a
             tool meant to be shared, used thoughtfully, and leveraged to improve
             people's lives. Isn't our ability to create, collaborate, and uplift
             others what truly makes us human?

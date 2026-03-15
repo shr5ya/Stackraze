@@ -175,7 +175,7 @@ export default function Signup() {
                   <div className="pl-10 flex items-center gap-2">
                     <img src={Logo2} className="h-25 dark:invert" alt="logo" />
                     {/* <p className="text-2xl font-semibold text-black dark:text-white">
-                    Anchor
+                    Algyñ
                   </p> */}
                   </div>
                 </div>

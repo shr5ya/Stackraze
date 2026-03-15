@@ -1,8 +1,8 @@
-# Anchor: Project Context & Overview
+# Algyñ: Project Context & Overview
 
-## What is Anchor?
+## What is Algyñ?
 
-**Anchor** is a full-stack, location-aware social networking platform designed to help users connect with people nearby, share updates, and build communities. It goes beyond traditional social media by incorporating geospatial features, allowing users to discover and interact with others based on their real-world proximity.
+**Algyñ** is a full-stack, location-aware social networking platform designed to help users connect with people nearby, share updates, and build communities. It goes beyond traditional social media by incorporating geospatial features, allowing users to discover and interact with others based on their real-world proximity.
 
 ## Tech Stack (MERN+)
 
@@ -26,7 +26,7 @@ The platform is built using a modern, robust JavaScript ecosystem:
 ## Core Features
 
 ### 1. Geospatial Connections (The Map)
-The standout feature of Anchor is its **Connect** page (`/connect`). 
+The standout feature of Algyñ is its **Connect** page (`/connect`). 
 - Users can view a dynamic map powered by MapLibre.
 - The map displays nearby users as markers (using their custom avatars).
 - Users can set a "range selector" (e.g., 10km radius) to filter who they see based on real-time geospatial queries (`$geoNear` in MongoDB using `2dsphere` indexes).
@@ -75,4 +75,4 @@ The project follows a clean separation of concerns:
    - Run `npm install` followed by `npm run dev`.
 
 ---
-*This document serves as a high-level overview of the Anchor architecture, feature set, and technical foundation.*
+*This document serves as a high-level overview of the Algyñ architecture, feature set, and technical foundation.*

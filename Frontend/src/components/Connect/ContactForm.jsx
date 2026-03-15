@@ -9,8 +9,8 @@ const FORM_TYPES = [
 
 const placeholders = {
     CONTACT: "Describe your query or how we can help you.",
-    FEEDBACK: "We'd love to hear your thoughts on Anchor.",
-    SUGGESTION: "Share ideas to help us improve Anchor.",
+    FEEDBACK: "We'd love to hear your thoughts on Algyñ.",
+    SUGGESTION: "Share ideas to help us improve Algyñ.",
 };
 
 function getUserFromStorage() {
