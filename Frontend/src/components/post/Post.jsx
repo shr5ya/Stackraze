@@ -1,18 +1,21 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Heart, MessageCircle, Bookmark, Send, MoreHorizontal, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import PostMoreOptions from './PostMoreOptions';
 import PostContent from './PostContent';
+import Comments from './Comments';
 import { useAuth } from '../../context/AuthContext';
 import { API_URL } from '../../config/api';
 import { resolveAvatar } from '../../utils/avatarHelper';
+import PostImageCarousel from "./postImages"
+import SavePost from "./savepost";
 
-function Post({ post }) {
+function Post({ post, initialSaved }) {
     const { user, token } = useAuth();
     const [liked, setLiked] = useState(false);
-    const [saved, setSaved] = useState(false);
+    // const [saved, setSaved] = useState(false);
     const [likesCount, setLikesCount] = useState(post?.likes?.length || 0);
-    const [comment, setComment] = useState('');
+    const [commentsOpen, setCommentsOpen] = useState(false);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [imageError, setImageError] = useState(false);
     const [currentUserAvatar, setCurrentUserAvatar] = useState(null);
@@ -119,13 +122,6 @@ function Post({ post }) {
         }
     };
 
-    const handleComment = (e) => {
-        e.preventDefault();
-        if (comment.trim()) {
-            console.log('Comment:', comment);
-            setComment('');
-        }
-    };
 
     // Format numbers (1000 -> 1k)
     const formatNumber = (num) => {
@@ -196,59 +192,7 @@ function Post({ post }) {
 
 
             {/* Photos */}
-            {photos.length > 0 && (
-                <div className="relative group">
-                    <img
-                        src={photos[currentImageIndex]}
-                        alt="Post"
-                        className="w-full aspect-video object-contain bg-black"
-                        onError={() => setImageError(true)}
-                    />
-
-                    {/* Left Arrow Button */}
-                    {photos.length > 1 && currentImageIndex > 0 && (
-                        <button
-                            onClick={() => setCurrentImageIndex(prev => prev - 1)}
-                            className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/90 dark:bg-black/70 rounded-full flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-white dark:hover:bg-black/90 hover:scale-110"
-                        >
-                            <ChevronLeft className="w-5 h-5 text-neutral-800 dark:text-white" />
-                        </button>
-                    )}
-
-                    {/* Right Arrow Button */}
-                    {photos.length > 1 && currentImageIndex < photos.length - 1 && (
-                        <button
-                            onClick={() => setCurrentImageIndex(prev => prev + 1)}
-                            className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/90 dark:bg-black/70 rounded-full flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-white dark:hover:bg-black/90 hover:scale-110"
-                        >
-                            <ChevronRight className="w-5 h-5 text-neutral-800 dark:text-white" />
-                        </button>
-                    )}
-
-                    {/* Image Navigation Dots */}
-                    {photos.length > 1 && (
-                        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
-                            {photos.map((_, index) => (
-                                <button
-                                    key={index}
-                                    onClick={() => setCurrentImageIndex(index)}
-                                    className={`w-2 h-2 rounded-full transition-all ${index === currentImageIndex
-                                        ? 'bg-white w-4'
-                                        : 'bg-white/50 hover:bg-white/75'
-                                        }`}
-                                />
-                            ))}
-                        </div>
-                    )}
-
-                    {/* Image Counter */}
-                    {photos.length > 1 && (
-                        <div className="absolute top-3 right-3 bg-black/60 text-white text-xs px-2 py-1 rounded-full">
-                            {currentImageIndex + 1}/{photos.length}
-                        </div>
-                    )}
-                </div>
-            )}
+            <PostImageCarousel photos={photos} />
 
             {/* Actions */}
             <div className="flex items-center justify-between px-4 py-3">
@@ -273,17 +217,20 @@ function Post({ post }) {
                     </button>
 
                     {/* Comment */}
-                    <button className="flex items-center gap-1.5 group">
-                        <MessageCircle className="w-6 h-6 text-neutral-600 dark:text-neutral-400 group-hover:text-blue-500 transition-colors" />
-                        {comments.length > 0 && (
-                            <span className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
-                                {formatNumber(comments.length)}
+                    <button
+                        onClick={() => setCommentsOpen(prev => !prev)}
+                        className="flex items-center gap-1.5 group"
+                    >
+                        <MessageCircle className={`w-6 h-6 transition-colors ${commentsOpen ? 'text-blue-500' : 'text-neutral-600 dark:text-neutral-400 group-hover:text-blue-500'}`} />
+                        {(post.commentsCount > 0) && (
+                            <span className={`text-sm font-medium ${commentsOpen ? 'text-blue-500' : 'text-neutral-600 dark:text-neutral-400'}`}>
+                                {formatNumber(post.commentsCount)}
                             </span>
                         )}
                     </button>
 
                     {/* Save */}
-                    <button
+                    {/* <button
                         onClick={() => setSaved(!saved)}
                         className="flex items-center gap-1.5 group"
                     >
@@ -293,7 +240,8 @@ function Post({ post }) {
                                 : 'text-neutral-600 dark:text-neutral-400 group-hover:text-neutral-900 dark:group-hover:text-white'
                                 }`}
                         />
-                    </button>
+                    </button> */}
+                    <SavePost postId={postId} initialSaved={initialSaved !== undefined ? initialSaved : !!post.isSaved} />
                 </div>
 
                 {/* Share */}
@@ -302,33 +250,14 @@ function Post({ post }) {
                 </button>
             </div>
 
-            {/* Comment Input */}
-            <div className="flex items-center gap-3 px-4 py-3 border-t border-neutral-100 dark:border-neutral-800">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-xs flex-shrink-0 overflow-hidden">
-                    {currentUserAvatar ? (
-                        <img src={currentUserAvatar} alt="You" className="w-full h-full rounded-full object-cover" />
-                    ) : (
-                        'U'
-                    )}
-                </div>
-                <form onSubmit={handleComment} className="flex-1 flex items-center">
-                    <input
-                        type="text"
-                        value={comment}
-                        onChange={(e) => setComment(e.target.value)}
-                        placeholder="Write your comment"
-                        className="flex-1 bg-transparent text-sm text-neutral-800 dark:text-neutral-200 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:outline-none"
-                    />
-                    {comment.trim() && (
-                        <button
-                            type="submit"
-                            className="text-blue-500 font-semibold text-sm hover:text-blue-600 transition-colors"
-                        >
-                            Post
-                        </button>
-                    )}
-                </form>
-            </div>
+            {/* Comments Section */}
+            <Comments
+                postId={postId}
+                latestComment={post.latestComment || null}
+                commentsCount={post.commentsCount || 0}
+                currentUserAvatar={currentUserAvatar}
+                forceOpen={commentsOpen}
+            />
         </div>
     );
 }

@@ -20,6 +20,12 @@ const Home = () => {
   const navigate = useNavigate();
   const { showPopup } = usePopup();
 
+  // scroll to top 
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    // window.scrollTo(0, 0); //hard scroll
+  }, []);
+
 
   const fetchPosts = async (pageNum) => {
     if (fetchingRef.current || loading) return;

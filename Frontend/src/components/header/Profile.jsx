@@ -92,7 +92,7 @@ const ProfileButton = () => {
               Profile
             </Link>
 
-            <Link
+            {/* <Link
               to="/settings"
               onClick={() => setIsOpen(false)}
               className="flex items-center gap-3 px-4 py-2.5 text-sm text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
@@ -102,9 +102,9 @@ const ProfileButton = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
               Settings
-            </Link>
+            </Link> */}
 
-            <Link
+            {/* <Link
               to="/bookmarks"
               onClick={() => setIsOpen(false)}
               className="flex items-center gap-3 px-4 py-2.5 text-sm text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
@@ -113,7 +113,7 @@ const ProfileButton = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
               </svg>
               Bookmarks
-            </Link>
+            </Link> */}
           </div>
 
           {/* Logout */}
@@ -147,7 +147,7 @@ const AuthButtons = () => {
 
       <Link
         to="/signup"
-        className='font-mono text-lg text-white hover:-translate-y-1 dark:hover:text-white transition-all duration-300 rounded-2xl bg-black px-3 p-1'
+        className='font-mono text-lgz text-white hover:-translate-y-1 dark:hover:text-white transition-all duration-300 rounded-2xl bg-black px-3 p-1'
       >
         Sign Up
       </Link>

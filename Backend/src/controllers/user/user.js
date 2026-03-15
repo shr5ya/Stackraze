@@ -215,6 +215,83 @@ async function handleGetProfileByUsername(req, res) {
   }
 }
 
+async function handleSavePostToUserData(req, res) {
+  try {
+    const { id: postId } = req.params;
+    const userId = req.user.id;
+
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { $addToSet: { savedPosts: postId } },
+      { new: true }
+    );
+
+    res.status(200).json({
+      message: "Post saved successfully",
+      savedPosts: user.savedPosts
+    });
+
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+async function handleUnsavePost(req, res) {
+  try {
+    const { id: postId } = req.params;
+    const userId = req.user.id;
+
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { $pull: { savedPosts: postId } },
+      { new: true }
+    );
+
+    res.status(200).json({
+      message: "Post unsaved successfully",
+      savedPosts: user.savedPosts
+    });
+
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+async function handleGetSavedPosts(req, res) {
+  try {
+    const { username } = req.params;
+
+    const user = await User.findOne({ username })
+      .select("username savedPosts")
+      .populate({
+        path: "savedPosts",
+        select: "content photos likes comments shares createdAt author",
+        options: { sort: { createdAt: -1 } },
+        populate: {
+          path: "author",
+          select: "name username avatar"
+        }
+      });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found"
+      });
+    }
+
+    res.status(200).json({
+      username: user.username,
+      savedPosts: user.savedPosts
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: "Server error",
+      error: error.message
+    });
+  }
+}
+
 
 module.exports = {
   handleUserSignup,
@@ -222,5 +299,8 @@ module.exports = {
   handleUserData,
   handleCreateContact,
   handleUpdateUserData,
-  handleGetProfileByUsername
+  handleGetProfileByUsername,
+  handleSavePostToUserData,
+  handleUnsavePost,
+  handleGetSavedPosts
 };

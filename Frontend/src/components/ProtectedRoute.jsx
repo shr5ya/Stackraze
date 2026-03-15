@@ -1,14 +1,16 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { usePopup } from '../context/PopupContext';
 
 /**
  * ProtectedRoute - Redirects based on authentication state
- * - If user is NOT logged in: redirects to /about
+ * - If user is NOT logged in: shows a popup then redirects to /about
  * - If user IS logged in: renders the protected component
  */
 const ProtectedRoute = ({ children }) => {
     const { isAuthenticated, loading } = useAuth();
+    const { showPopup } = usePopup();
 
     // Show nothing while checking auth state
     if (loading) {
@@ -20,10 +22,24 @@ const ProtectedRoute = ({ children }) => {
     }
 
     if (!isAuthenticated) {
-        return <Navigate to="/about" replace />;
+        return <RedirectWithPopup showPopup={showPopup} />;
     }
 
     return children;
+};
+
+/** Fires the popup in an effect so it runs after mount, then redirects. */
+const RedirectWithPopup = ({ showPopup }) => {
+    const hasShown = useRef(false);
+
+    useEffect(() => {
+        if (!hasShown.current) {
+            hasShown.current = true;
+            showPopup("Please log in to access this page.", "error");
+        }
+    }, []);
+
+    return <Navigate to="/about" replace />;
 };
 
 /**

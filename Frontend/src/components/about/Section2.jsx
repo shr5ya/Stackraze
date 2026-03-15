@@ -2,37 +2,48 @@ import Video from "../../assets/loader.mp4";
 
 function Section2() {
   return (
-    <div className="flex flex-col lg:flex-row justify-between items-center font-sans bg-white  py-16 lg:py-2 px-6 lg:px-20 gap-12">
-      {/* Left Side - Video */}
-      <div className="w-1/2 lg:w-1/4 flex justify-center items-center">
-        <video
-          src={Video}
-          autoPlay
-          muted
-          playsInline
-          loop
-          className="w-full  max-w-md lg:max-w-lg object-contain"
-        />
-      </div>
+    <div className="bg-white dark:bg-black transition-colors duration-300">
+      <div className="max-w-5xl mx-auto px-6 py-16 md:py-24 flex flex-col md:flex-row items-center gap-12 md:gap-16">
 
-      {/* Right Side - Text */}
-      <div className="w-full lg:w-1/2 font-sans text-center lg:text-left text-lg bg-amber-50 sm:text-xl lg:text-xl p-4 font-semibold leading-relaxed space-y-6">
-        <p className="text-lg md:text-xl font-light leading-relaxed max-w-4xl mx-auto font-inter text-black text-justify">
-          Anchor is a developer community platform built to foster meaningful
-          collaboration, continuous learning, and open-source innovation. We
-          believe great ideas grow stronger when shared, and that no developer
-          should have to solve problems alone. Whether you're debugging a
-          stubborn 2AM error, preparing for your next hackathon, exploring a new
-          framework, or contributing to open source, Anchor connects you with
-          peers who are ready to build, learn, and grow alongside you. Our
-          mission is simple: create a trusted space where developers can
-          exchange knowledge, find teammates, solve real-world problems, and
-          turn ambitious ideas into impactful projects — together.
-        </p>
+        {/* Left — Video */}
+        <div className="w-40 sm:w-52 md:w-64 shrink-0 flex justify-center">
+          <video
+            src={Video}
+            autoPlay
+            muted
+            playsInline
+            loop
+            className="w-full object-contain dark:invert rounded-full"
+          />
+        </div>
+
+        {/* Right — Text */}
+        <div className="flex flex-col gap-5">
+          <span className="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-zinc-500">
+            Our Mission
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-black text-gray-900 dark:text-zinc-100 leading-snug">
+            No developer should have to solve problems alone.
+          </h2>
+          <p className="text-base text-gray-500 dark:text-zinc-400 leading-relaxed">
+            Anchor is a developer community platform built to foster meaningful
+            collaboration, continuous learning, and open-source innovation. We
+            believe great ideas grow stronger when shared. Whether you're
+            debugging a stubborn 2AM error, preparing for your next hackathon,
+            exploring a new framework, or contributing to open source — Anchor
+            connects you with peers who are ready to build, learn, and grow
+            alongside you.
+          </p>
+          <p className="text-base text-gray-500 dark:text-zinc-400 leading-relaxed">
+            Our mission is simple: create a trusted space where developers can
+            exchange knowledge, find teammates, solve real-world problems, and
+            turn ambitious ideas into impactful projects — together.
+          </p>
+        </div>
+
       </div>
     </div>
   );
 }
 
 export default Section2;
-

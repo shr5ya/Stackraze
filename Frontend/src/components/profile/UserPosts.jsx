@@ -8,29 +8,32 @@ import { Link } from 'react-router-dom';
 
 function UserPosts({ username }) {
   const { user, token } = useAuth();
+
+  // Own posts state
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Tab state
   const [activeTab, setActiveTab] = useState('posts'); // 'posts' | 'saved'
 
+  // Saved posts state
+  const [savedPosts, setSavedPosts] = useState([]);
+  const [savedLoading, setSavedLoading] = useState(false);
+  const [savedError, setSavedError] = useState(null);
+  const [savedFetched, setSavedFetched] = useState(false); // lazy — only fetch once
+
   const isOwnProfile = user?.username === username;
+
+  // Scroll to top on profile change
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-    // window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [username]);
 
+  // ── Fetch user's own posts ──
   useEffect(() => {
-    // Only fetch posts if username is provided
-    if (!username) {
-      setLoading(false);
-      return;
-    }
-
-    // Only fetch if logged in (route requires auth)
-    if (!token) {
-      setLoading(false);
-      return;
-    }
+    if (!username) { setLoading(false); return; }
+    if (!token) { setLoading(false); return; }
 
     const fetchUserPosts = async () => {
       try {
@@ -38,9 +41,7 @@ function UserPosts({ username }) {
         setError(null);
 
         const res = await fetch(`${API_URL}/user/post/userposts/${username}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
 
         if (!res.ok) {
@@ -61,43 +62,85 @@ function UserPosts({ username }) {
     fetchUserPosts();
   }, [username, token]);
 
-  // Don't show anything if there's no username
-  if (error === "User not found") return null;
+  // ── Fetch saved posts (lazy — only runs when Saved tab is first opened) ──
+  useEffect(() => {
+    if (activeTab !== 'saved') return;
+    if (savedFetched) return;
+    if (!token || !username) return;
 
-  const postLabel = isOwnProfile ? 'Your Posts' : `Posts`;
-  const savedLabel = 'Saved';
+    const fetchSavedPosts = async () => {
+      try {
+        setSavedLoading(true);
+        setSavedError(null);
+
+        const res = await fetch(`${API_URL}/user/post/savedposts/${username}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.message || 'Failed to fetch saved posts');
+        }
+
+        const data = await res.json();
+        setSavedPosts(Array.isArray(data.savedPosts) ? data.savedPosts : []);
+        setSavedFetched(true);
+      } catch (err) {
+        console.error('Error fetching saved posts:', err);
+        setSavedError(err.message);
+      } finally {
+        setSavedLoading(false);
+      }
+    };
+
+    fetchSavedPosts();
+  }, [activeTab, savedFetched, token, username]);
+
+  // Reset saved cache when navigating to a different profile
+  useEffect(() => {
+    setSavedPosts([]);
+    setSavedFetched(false);
+    setSavedError(null);
+    setActiveTab('posts');
+  }, [username]);
+
+  if (error === 'User not found') return null;
+
+  const postLabel = isOwnProfile ? 'Your Posts' : 'Posts';
 
   return (
     <div className="max-w-3xl w-full mx-auto mt-4 pb-8">
-      {/* Tab Header */}
+
+      {/* Tab Header — only shown when logged in */}
       {user && (
         <div className="flex border-b border-gray-200 dark:border-gray-700 mb-4 bg-white dark:bg-black rounded-t-md shadow-sm">
-        {/* Posts Tab */}
-        <button
-          onClick={() => setActiveTab('posts')}
-          className={`flex-1 py-3 text-sm font-semibold text-center flex items-center justify-center gap-2 transition-colors border-b-2 ${activeTab === 'posts'
-            ? 'text-blue-600 dark:text-blue-400 border-blue-600 dark:border-blue-400'
-            : 'text-gray-500 dark:text-gray-400 border-transparent hover:text-gray-700 dark:hover:text-gray-300'
-            }`}
-        >
-          <FileText className="w-4 h-4" />
-          {postLabel}
-        </button>
 
-        {/* Saved Posts Tab */}
-        {isOwnProfile && (
+          {/* Posts Tab */}
           <button
-          onClick={() => setActiveTab('saved')}
-          className={`flex-1 py-3 text-sm font-semibold text-center flex items-center justify-center gap-2 transition-colors border-b-2 ${activeTab === 'saved'
-            ? 'text-blue-600 dark:text-blue-400 border-blue-600 dark:border-blue-400'
-            : 'text-gray-500 dark:text-gray-400 border-transparent hover:text-gray-700 dark:hover:text-gray-300'
-            }`}
-        >
-          <Bookmark className="w-4 h-4" />
-          {savedLabel}
-        </button>
-        )}
-      </div>
+            onClick={() => setActiveTab('posts')}
+            className={`flex-1 py-3 text-sm font-semibold text-center flex items-center justify-center gap-2 transition-colors border-b-2 ${activeTab === 'posts'
+              ? 'text-blue-600 dark:text-blue-400 border-blue-600 dark:border-blue-400'
+              : 'text-gray-500 dark:text-gray-400 border-transparent hover:text-gray-700 dark:hover:text-gray-300'
+              }`}
+          >
+            <FileText className="w-4 h-4" />
+            {postLabel}
+          </button>
+
+          {/* Saved Posts Tab — own profile only */}
+          {isOwnProfile && (
+            <button
+              onClick={() => setActiveTab('saved')}
+              className={`flex-1 py-3 text-sm font-semibold text-center flex items-center justify-center gap-2 transition-colors border-b-2 ${activeTab === 'saved'
+                ? 'text-blue-600 dark:text-blue-400 border-blue-600 dark:border-blue-400'
+                : 'text-gray-500 dark:text-gray-400 border-transparent hover:text-gray-700 dark:hover:text-gray-300'
+                }`}
+            >
+              <Bookmark className="w-4 h-4" />
+              Saved
+            </button>
+          )}
+        </div>
       )}
 
       {/* ── POSTS TAB ── */}
@@ -106,9 +149,7 @@ function UserPosts({ username }) {
           {/* Loading skeletons */}
           {loading && (
             <div className="flex flex-col gap-4">
-              {[1, 2, 3].map((i) => (
-                <PostSkeleton key={i} />
-              ))}
+              {[1, 2, 3].map((i) => <PostSkeleton key={i} />)}
             </div>
           )}
 
@@ -119,15 +160,12 @@ function UserPosts({ username }) {
             </div>
           )}
 
-          {/* Not logged in state */}
+          {/* Not logged in */}
           {!token && (
             <div className="flex flex-col items-center justify-center py-16 text-gray-400 dark:text-gray-500 gap-3">
               <LogIn className="w-10 h-10 opacity-40" />
               <p className="text-sm font-medium">Please login to see posts</p>
-              <Link
-                to="/login"
-                className="text-sm text-blue-500 hover:text-blue-600 font-semibold transition-colors"
-              >
+              <Link to="/login" className="text-sm text-blue-500 hover:text-blue-600 font-semibold transition-colors">
                 Login
               </Link>
             </div>
@@ -156,11 +194,41 @@ function UserPosts({ username }) {
 
       {/* ── SAVED POSTS TAB ── */}
       {activeTab === 'saved' && (
-        <div className="flex flex-col items-center justify-center py-16 text-gray-400 dark:text-gray-500 gap-3">
-          <Bookmark className="w-10 h-10 opacity-40" />
-          <p className="text-sm font-medium">Saved posts coming soon.</p>
-        </div>
+        <>
+          {/* Loading skeletons */}
+          {savedLoading && (
+            <div className="flex flex-col gap-4">
+              {[1, 2, 3].map((i) => <PostSkeleton key={i} />)}
+            </div>
+          )}
+
+          {/* Error state */}
+          {!savedLoading && savedError && (
+            <div className="text-center py-10 text-gray-500 dark:text-gray-400">
+              <p className="text-sm">Could not load saved posts: {savedError}</p>
+            </div>
+          )}
+
+          {/* Empty state */}
+          {!savedLoading && !savedError && savedPosts.length === 0 && (
+            <div className="flex flex-col items-center justify-center py-16 text-gray-400 dark:text-gray-500 gap-3">
+              <Bookmark className="w-10 h-10 opacity-40" />
+              <p className="text-sm font-medium">No saved posts yet.</p>
+              <p className="text-xs opacity-60">Posts you bookmark will appear here.</p>
+            </div>
+          )}
+
+          {/* Saved posts list */}
+          {!savedLoading && !savedError && savedPosts.length > 0 && (
+            <div className="flex flex-col gap-4">
+              {savedPosts.map((post) => (
+                <Post key={post._id?.$oid || post._id} post={post} initialSaved={true} />
+              ))}
+            </div>
+          )}
+        </>
       )}
+
     </div>
   );
 }

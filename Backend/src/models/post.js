@@ -1,5 +1,33 @@
 const mongoose = require("mongoose");
 
+const commentSchema = new mongoose.Schema(
+  {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    username: {
+      type: String,
+      required: true,
+    },
+    avatar: {
+      type: String,
+      default: null,
+    },
+    text: {
+      type: String,
+      required: true,
+      maxlength: 300,
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
+  },
+  { _id: false }
+);
+
 const postSchema = new mongoose.Schema(
   {
     content: {
@@ -9,11 +37,7 @@ const postSchema = new mongoose.Schema(
       maxlength: 800,
     },
 
-    photos: [
-      {
-        type: String,
-      },
-    ],
+    photos: [{ type: String }],
 
     author: {
       type: mongoose.Schema.Types.ObjectId,
@@ -32,12 +56,7 @@ const postSchema = new mongoose.Schema(
       default: 0,
     },
 
-    comments: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Comment",
-      },
-    ],
+    comments: [commentSchema], // embedded subdocuments
 
     isNewLetter: {
       type: Boolean,
@@ -49,7 +68,7 @@ const postSchema = new mongoose.Schema(
       default: true,
     },
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
 module.exports = mongoose.model("Post", postSchema);

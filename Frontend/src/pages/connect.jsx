@@ -107,8 +107,8 @@ function connect() {
       <main className="min-h-screen pt-20 pb-20 px-4">
         <div className="w-full max-w-xl mx-auto flex flex-col gap-6">
           {loading ? (
-            <div className="flex justify-center items-center h-40">
-              Loading...
+            <div className="max-w-3xl w-full mx-auto p-10 flex justify-center items-center h-48">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
             </div>
           ) : hasLocation && userCoordinates ? (
             <div className="flex flex-col gap-4 w-full">
