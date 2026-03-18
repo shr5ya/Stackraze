@@ -5,6 +5,8 @@ const path = require("path");
 const app = express();
 const userRoutes = require("./routes/user");
 const adminRoutes = require('./routes/admin');
+const newsletterRoutes = require('./routes/newsletter');
+const communityRoutes = require('./routes/community');
 
 // middlewares
 app.use(cors({
@@ -23,6 +25,8 @@ app.get("/", (req, res) => {
 
 app.use('/user', userRoutes);
 app.use('/admin', adminRoutes);
+app.use('/newsletter', newsletterRoutes);
+app.use('/community', communityRoutes);
 
 app.use((req, res) => {
     res.status(404).render("404", {

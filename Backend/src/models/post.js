@@ -34,7 +34,7 @@ const postSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
-      maxlength: 800,
+      maxlength: 5000,
     },
 
     photos: [{ type: String }],
@@ -57,6 +57,29 @@ const postSchema = new mongoose.Schema(
     },
 
     comments: [commentSchema], // embedded subdocuments
+
+    // Newsletter-specific fields
+    title: {
+      type: String,
+      trim: true,
+      maxlength: 200,
+    },
+
+    category: {
+      type: String,
+      trim: true,
+      maxlength: 50,
+    },
+
+    summary: {
+      type: String,
+      trim: true,
+      maxlength: 300,
+    },
+
+    coverImage: {
+      type: String,
+    },
 
     isNewLetter: {
       type: Boolean,
