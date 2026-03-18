@@ -13,7 +13,7 @@ function contact() {
     {
       question: "How do I reset my password?",
       answer:
-        "Please send an email to abhisheksharma7340733@gmail.com with your details and we'll change your password as requested. You can also try filling out the contact form with your concern.",
+        "Please send an email to s8reya@gmail.com with your details and we'll change your password as requested. You can also try filling out the contact form with your concern.",
     },
     {
       question: "How do I delete my account permanently?",
