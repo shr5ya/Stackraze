@@ -27,8 +27,20 @@ const userSchema = new mongoose.Schema(
 
     password: {
       type: String,
-      required: true,
       minlength: 6,
+      // Not required — Google OAuth users won't have a password
+    },
+
+    googleId: {
+      type: String,
+      unique: true,
+      sparse: true, // allows multiple null values
+    },
+
+    authProvider: {
+      type: String,
+      enum: ["local", "google"],
+      default: "local",
     },
 
     // Only one avatar field
@@ -66,6 +78,14 @@ const userSchema = new mongoose.Schema(
       default: false,
     },
 
+    emailOtp: {
+      type: String, // hashed OTP
+    },
+
+    emailOtpExpiry: {
+      type: Date,
+    },
+
     location: {
       city: {
         type: String,
@@ -100,4 +120,3 @@ userSchema.index({ "location.coordinates": "2dsphere" });
 
 const User = mongoose.model("User", userSchema);
 module.exports = User;
-

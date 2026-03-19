@@ -1,5 +1,6 @@
 const express = require('express');
-const { handleUserSignup, handleUserLogin, handleUserData, handleCreateContact, handleUpdateUserData, handleGetProfileByUsername, handleSavePostToUserData, handleUnsavePost, handleGetSavedPosts } = require('../controllers/user/user');
+const passport = require('passport');
+const { handleUserSignup, handleUserLogin, handleVerifyOtp, handleResendOtp, handleGoogleCallback, handleUserData, handleCreateContact, handleUpdateUserData, handleGetProfileByUsername, handleSavePostToUserData, handleUnsavePost, handleGetSavedPosts } = require('../controllers/user/user');
 const { handleCreatePost, handleGetAllPosts, handleDeletePost, handleLikePost, handleGetUSerPosts, handleGetPostComments, handleAddComment } = require('../controllers/post/post');
 const { handleGetNearbyUsers, handleGetUserLocation, handleSetUserGeodata } = require("../controllers/connect/geoDataHandeler");
 const { handleAddGridArt, handleGetGrids } = require("../controllers/gridArt/grid")
@@ -8,8 +9,17 @@ const authMiddleware = require('../mildewares/authMiddleware');
 
 const router = express.Router();
 
+// Auth routes
 router.post('/signup', handleUserSignup);
 router.post('/login', handleUserLogin);
+router.post('/verify-otp', handleVerifyOtp);
+router.post('/resend-otp', handleResendOtp);
+
+// Google OAuth routes
+router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'], session: false }));
+router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login', session: false }), handleGoogleCallback);
+
+// User data routes
 router.get('/userData', authMiddleware, handleUserData);
 router.patch('/updateData', authMiddleware, handleUpdateUserData);
 router.get('/profile', handleGetProfileByUsername);

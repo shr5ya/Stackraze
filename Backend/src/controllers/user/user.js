@@ -1,8 +1,11 @@
 const User = require("../../models/user");
-const Contact = require("../../models/contactFrom")
+const Contact = require("../../models/contactFrom");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
+const { generateOtp, sendOtpEmail } = require("../../utils/emailService");
 
 const JWT_SECRET = process.env.JWT_SECRET;
+const SALT_ROUNDS = 10;
 
 async function handleUserSignup(req, res) {
   try {
@@ -24,10 +27,36 @@ async function handleUserSignup(req, res) {
       return res.status(409).json({ message: "Username already taken" });
     }
 
-    const user = await User.create({ name, username, email, password, avatar: avatar || "Avatar1" });
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+
+    // Generate OTP for email verification
+    const otp = generateOtp();
+    const hashedOtp = await bcrypt.hash(otp, SALT_ROUNDS);
+
+    const user = await User.create({
+      name,
+      username,
+      email,
+      password: hashedPassword,
+      avatar: avatar || "Avatar1",
+      authProvider: "local",
+      isVerified: false,
+      emailOtp: hashedOtp,
+      emailOtpExpiry: new Date(Date.now() + 10 * 60 * 1000), // 10 minutes
+    });
+
+    // Send OTP email
+    try {
+      await sendOtpEmail(email, otp, name);
+    } catch (emailError) {
+      console.error("Failed to send OTP email:", emailError);
+      // Still create user, they can resend OTP later
+    }
 
     return res.status(201).json({
-      message: "Signup successful",
+      message: "Signup successful. Please verify your email with the OTP sent to your inbox.",
+      requiresVerification: true,
       user: {
         id: user._id,
         name: user.name,
@@ -53,15 +82,62 @@ async function handleUserLogin(req, res) {
     }
 
     const user = await User.findOne({ email })
-      .select("_id name username email avatar password about")
+      .select("_id name username email avatar password about isVerified authProvider")
       .lean();
 
-    if (!user || user.password !== password) {
+    if (!user) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
+    // If user signed up with Google and has no password
+    if (user.authProvider === "google" && !user.password) {
+      return res.status(400).json({
+        message: "This account uses Google sign-in. Please use the Google button to log in.",
+      });
+    }
+
+    // Compare password — support both bcrypt hashes and legacy plaintext
+    let isPasswordValid = false;
+    if (user.password.startsWith("$2a$") || user.password.startsWith("$2b$")) {
+      isPasswordValid = await bcrypt.compare(password, user.password);
+    } else {
+      // Legacy plaintext password — compare directly, then re-hash
+      isPasswordValid = user.password === password;
+      if (isPasswordValid) {
+        const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+        await User.findByIdAndUpdate(user._id, { password: hashedPassword });
+      }
+    }
+
+    if (!isPasswordValid) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+
+    // Check if email is verified
+    if (!user.isVerified) {
+      // Generate and send a new OTP
+      const otp = generateOtp();
+      const hashedOtp = await bcrypt.hash(otp, SALT_ROUNDS);
+
+      await User.findByIdAndUpdate(user._id, {
+        emailOtp: hashedOtp,
+        emailOtpExpiry: new Date(Date.now() + 10 * 60 * 1000),
+      });
+
+      try {
+        await sendOtpEmail(user.email, otp, user.name);
+      } catch (emailError) {
+        console.error("Failed to send OTP email:", emailError);
+      }
+
+      return res.status(403).json({
+        message: "Email not verified. A new OTP has been sent to your email.",
+        requiresVerification: true,
+        email: user.email,
+      });
+    }
+
     const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: "1d" });
-    // console.log(user);
 
     res.json({
       message: "Login successful",
@@ -72,13 +148,142 @@ async function handleUserLogin(req, res) {
         username: user.username,
         email: user.email,
         avatar: user.avatar,
-        about: user.about
+        about: user.about,
       },
     });
   } catch (error) {
-    // console.log(error);
-
+    console.log(error);
     return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+async function handleVerifyOtp(req, res) {
+  try {
+    const { email, otp } = req.body || {};
+
+    if (!email || !otp) {
+      return res.status(400).json({ message: "Email and OTP are required" });
+    }
+
+    const user = await User.findOne({ email })
+      .select("_id name username email avatar about emailOtp emailOtpExpiry isVerified");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (user.isVerified) {
+      return res.status(400).json({ message: "Email is already verified" });
+    }
+
+    if (!user.emailOtp || !user.emailOtpExpiry) {
+      return res.status(400).json({ message: "No OTP found. Please request a new one." });
+    }
+
+    // Check OTP expiry
+    if (new Date() > user.emailOtpExpiry) {
+      return res.status(400).json({ message: "OTP has expired. Please request a new one." });
+    }
+
+    // Verify OTP
+    const isOtpValid = await bcrypt.compare(otp, user.emailOtp);
+    if (!isOtpValid) {
+      return res.status(400).json({ message: "Invalid OTP" });
+    }
+
+    // Mark as verified and clear OTP fields
+    user.isVerified = true;
+    user.emailOtp = undefined;
+    user.emailOtpExpiry = undefined;
+    await user.save();
+
+    // Generate token and log in the user
+    const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: "1d" });
+
+    return res.status(200).json({
+      message: "Email verified successfully",
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        username: user.username,
+        email: user.email,
+        avatar: user.avatar,
+        about: user.about,
+      },
+    });
+  } catch (error) {
+    console.error("Error verifying OTP:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+async function handleResendOtp(req, res) {
+  try {
+    const { email } = req.body || {};
+
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
+    }
+
+    const user = await User.findOne({ email }).select("_id name email isVerified");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (user.isVerified) {
+      return res.status(400).json({ message: "Email is already verified" });
+    }
+
+    // Generate new OTP
+    const otp = generateOtp();
+    const hashedOtp = await bcrypt.hash(otp, SALT_ROUNDS);
+
+    user.emailOtp = hashedOtp;
+    user.emailOtpExpiry = new Date(Date.now() + 10 * 60 * 1000);
+    await user.save();
+
+    await sendOtpEmail(user.email, otp, user.name);
+
+    return res.status(200).json({
+      message: "A new OTP has been sent to your email.",
+    });
+  } catch (error) {
+    console.error("Error resending OTP:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+async function handleGoogleCallback(req, res) {
+  try {
+    const user = req.user;
+
+    if (!user) {
+      return res.redirect(`${process.env.CLIENT_URL || "http://localhost:5173"}/login?error=auth_failed`);
+    }
+
+    const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: "1d" });
+
+    // Build user data to pass via URL
+    const userData = encodeURIComponent(
+      JSON.stringify({
+        id: user._id,
+        name: user.name,
+        username: user.username,
+        email: user.email,
+        avatar: user.avatar,
+        about: user.about || "",
+      })
+    );
+
+    // Redirect to frontend with token and user data
+    res.redirect(
+      `${process.env.CLIENT_URL || "http://localhost:5173"}/auth/google/success?token=${token}&user=${userData}`
+    );
+  } catch (error) {
+    console.error("Error in Google callback:", error);
+    res.redirect(`${process.env.CLIENT_URL || "http://localhost:5173"}/login?error=server_error`);
   }
 }
 
@@ -118,7 +323,7 @@ async function handleCreateContact(req, res) {
       message: error.message,
     });
   }
-};
+}
 
 async function handleUpdateUserData(req, res) {
   try {
@@ -158,16 +363,26 @@ async function handleUpdateUserData(req, res) {
         return res.status(400).json({ message: "oldPassword is required to change the password" });
       }
 
-      // Fetch the user's current password
       const currentUser = await User.findById(userId).select("password").lean();
-      if (!currentUser || currentUser.password !== updateFields.oldPassword) {
+
+      // Support both bcrypt and plaintext old passwords
+      let oldPasswordValid = false;
+      if (currentUser.password.startsWith("$2a$") || currentUser.password.startsWith("$2b$")) {
+        oldPasswordValid = await bcrypt.compare(updateFields.oldPassword, currentUser.password);
+      } else {
+        oldPasswordValid = currentUser.password === updateFields.oldPassword;
+      }
+
+      if (!currentUser || !oldPasswordValid) {
         return res.status(401).json({ message: "Incorrect old password" });
       }
 
-      // Optional: Since there is a minlength of 6 on the schema, we can enforce it explicitly
       if (updates.password.length < 6) {
         return res.status(400).json({ message: "Password must be at least 6 characters long" });
       }
+
+      // Hash the new password
+      updates.password = await bcrypt.hash(updates.password, SALT_ROUNDS);
     }
 
     const updatedUser = await User.findByIdAndUpdate(
@@ -292,10 +507,12 @@ async function handleGetSavedPosts(req, res) {
   }
 }
 
-
 module.exports = {
   handleUserSignup,
   handleUserLogin,
+  handleVerifyOtp,
+  handleResendOtp,
+  handleGoogleCallback,
   handleUserData,
   handleCreateContact,
   handleUpdateUserData,

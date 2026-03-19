@@ -1,6 +1,10 @@
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
+const passport = require("passport");
+
+// Initialize passport config
+require("./config/passport");
 
 const app = express();
 const userRoutes = require("./routes/user");
@@ -14,6 +18,7 @@ app.use(cors({
     credentials: true,
 }));
 app.use(express.json());
+app.use(passport.initialize());
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));

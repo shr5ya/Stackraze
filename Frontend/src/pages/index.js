@@ -9,7 +9,7 @@ import Contact from "./contact"
 import NewsLetter from "./newsLetters"
 import Community from "./comunity"
 import Settings from "./settings"
+import OtpVerification from "./OtpVerification"
 
 
-export { About, Home, Auth, Login, Signup, Connect, Profile, Contact, NewsLetter, Community, Settings };
-
+export { About, Home, Auth, Login, Signup, Connect, Profile, Contact, NewsLetter, Community, Settings, OtpVerification };
