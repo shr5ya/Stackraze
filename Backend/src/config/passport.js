@@ -25,11 +25,16 @@ passport.use(
         user = await User.findOne({ email });
 
         if (user) {
-          // Link the Google account to the existing local user
-          user.googleId = googleId;
-          if (!user.isVerified) user.isVerified = true;
-          await user.save();
-          return done(null, user);
+          try {
+            // Link the Google account to the existing local user
+            user.googleId = googleId;
+            if (!user.isVerified) user.isVerified = true;
+            await user.save();
+            return done(null, user);
+          } catch (saveError) {
+            console.error("Error saving linked Google account:", saveError);
+            return done(saveError, null);
+          }
         }
 
         // 3. Create a brand-new user from Google profile

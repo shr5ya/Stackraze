@@ -17,7 +17,7 @@ router.post('/resend-otp', handleResendOtp);
 
 // Google OAuth routes
 router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'], session: false }));
-router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login', session: false }), handleGoogleCallback);
+router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: `${process.env.CLIENT_URL}/login?error=auth_failed`, session: false }), handleGoogleCallback);
 
 // User data routes
 router.get('/userData', authMiddleware, handleUserData);

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 
 const AuthContext = createContext(null);
 
@@ -21,21 +21,21 @@ export const AuthProvider = ({ children }) => {
         setLoading(false);
     }, []);
 
-    const login = (userData, authToken) => {
+    const login = useCallback((userData, authToken) => {
         setUser(userData);
         setToken(authToken);
         localStorage.setItem('user', JSON.stringify(userData));
         if (authToken) {
             localStorage.setItem('token', authToken);
         }
-    };
+    }, []);
 
-    const logout = () => {
+    const logout = useCallback(() => {
         setUser(null);
         setToken(null);
         localStorage.removeItem('user');
         localStorage.removeItem('token');
-    };
+    }, []);
 
     const isAuthenticated = !!user && !!token;
 
