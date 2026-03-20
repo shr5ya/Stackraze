@@ -133,8 +133,8 @@ const Home = () => {
       <Sidebar />
 
       {/* Main content — centered on screen */}
-      <main className="min-h-screen pt-20 pb-20 px-4">
-        <div className="w-full max-w-xl mx-auto flex flex-col gap-6">
+      <main className="min-h-screen pt-12 lg:pt-20 pb-20 px-">
+        <div className="w-full max-w-xl mx-auto flex flex-col gap-2 lg:gap-6">
           {/* Create Post */}
           <UploadPost onSubmit={handleNewPost} />
 
