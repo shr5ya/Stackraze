@@ -33,14 +33,14 @@ function Community() {
   }, []);
 
   return (
-    <div className='h-screen bg-zinc-50 dark:bg-zinc-950 font-sans overflow-hidden flex flex-col'>
+    <div className='h-[100dvh] bg-zinc-50 dark:bg-zinc-950 font-sans overflow-hidden flex flex-col'>
       {/* Position app sidebar on the far left for this full-page dashboard view */}
       <Sidebar 
         className="!left-5 !right-auto" 
         style={{ left: '1.25rem', right: 'auto' }} 
       />
       
-      <main className="flex-1 pt-[72px] md:pt-20 flex overflow-hidden w-full lg:pl-72 pr-0">
+      <main className="flex-1 pt-[72px] md:pt-20 pb-[72px] md:pb-0 flex overflow-hidden w-full lg:pl-72 pr-0">
         <div className="w-full h-full flex bg-white dark:bg-zinc-950/80 border-t border-zinc-200 dark:border-zinc-800 shadow-sm relative overflow-hidden">
           {loading ? (
             <div className="w-full h-full flex flex-col items-center justify-center">
