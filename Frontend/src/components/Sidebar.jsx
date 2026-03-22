@@ -17,7 +17,7 @@ import { resolveAvatar } from "../utils/avatarHelper";
 
 const MD_BREAKPOINT = 768;
 
-const Sidebar = () => {
+const Sidebar = ({ className = "", style = {} }) => {
   const { pathname } = useLocation();
   const { user } = useAuth();
 
@@ -383,8 +383,8 @@ const Sidebar = () => {
   /* ─── DESKTOP RENDER ─── */
   return (
     <aside
-      className={`fixed top-20 pb-10 bg-white/10 dark:bg-black/40 backdrop-blur-lg border border-white/20 dark:border-gray-800/50 transition-all duration-500 ease-out flex flex-col shadow-xl rounded-2xl ${isExpanded ? "w-64" : "w-16"}`}
-      style={{ right: "calc(50% + 18rem + 1.25rem)" }}
+      className={`fixed z-40 top-20 pb-10 bg-white/10 dark:bg-black/40 backdrop-blur-lg border border-white/20 dark:border-gray-800/50 transition-all duration-500 ease-out flex flex-col shadow-xl rounded-2xl ${isExpanded ? "w-64" : "w-16"} ${className}`}
+      style={{ right: "calc(50% + 18rem + 1.25rem)", ...style }}
     >
       {desktopSidebarContent(isExpanded)}
     </aside>
