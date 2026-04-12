@@ -115,6 +115,11 @@ const App = () => {
             <Settings />
           </ProtectedRoute>
         } />
+        <Route path='/settings/:tab' element={
+          <ProtectedRoute>
+            <Settings />
+          </ProtectedRoute>
+        } />
 
         {/* Public Profile page */}
         <Route path='/profile/:username' element={<Profile />} />

@@ -7,7 +7,7 @@ import { resolveAvatar } from "@/utils/avatarHelper";
 import { API_URL } from "@/config/api";
 import { usePopup } from "@/context/PopupContext";
 
-function EditProfileModal({ isOpen, onClose }) {
+function EditProfileModal({ isOpen, onClose, inline = false }) {
   const { user, login, token } = useAuth();
   const { uploadAvatar, isUploading } = useAvatarUpload();
   const { showPopup } = usePopup();
@@ -30,7 +30,7 @@ function EditProfileModal({ isOpen, onClose }) {
 
   // Reset the modal state every time it opens to reflect the latest user data
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen || inline) {
       setFormData({
         name: user?.name || "",
         username: user?.username || "",
@@ -42,7 +42,7 @@ function EditProfileModal({ isOpen, onClose }) {
     }
   }, [isOpen, user]);
 
-  if (!isOpen) return null;
+  if (!isOpen && !inline) return null;
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -127,23 +127,33 @@ function EditProfileModal({ isOpen, onClose }) {
     }
   };
 
+  const modalOverlayClasses = inline 
+    ? "" 
+    : "fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm";
+
+  const containerClasses = inline
+    ? "bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-xl w-full flex flex-col mb-4"
+    : "bg-white dark:bg-zinc-900 rounded-xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]";
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm">
+    <div className={modalOverlayClasses}>
       <div
-        className="bg-white dark:bg-zinc-900 rounded-xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]"
-        onClick={(e) => e.stopPropagation()}
+        className={containerClasses}
+        onClick={inline ? undefined : (e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="px-6 py-4 border-b border-gray-100 dark:border-zinc-800 flex justify-between items-center bg-gray-50/50 dark:bg-zinc-900/50">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">
             Edit Profile
           </h2>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors p-1 rounded-full hover:bg-gray-100 dark:hover:bg-zinc-800"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          {!inline && (
+            <button
+              onClick={onClose}
+              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors p-1 rounded-full hover:bg-gray-100 dark:hover:bg-zinc-800"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          )}
         </div>
 
         {/* Content */}
@@ -260,14 +270,16 @@ function EditProfileModal({ isOpen, onClose }) {
 
             {/* Actions */}
             <div className="pt-4 flex gap-3 justify-end border-t border-gray-100 dark:border-zinc-800 mt-6">
-              <button
-                type="button"
-                onClick={onClose}
-                className="px-5 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-zinc-800 border border-gray-300 dark:border-zinc-700 rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors"
-                disabled={isSubmitting || isUploading}
-              >
-                Cancel
-              </button>
+              {!inline && (
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="px-5 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-zinc-800 border border-gray-300 dark:border-zinc-700 rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors"
+                  disabled={isSubmitting || isUploading}
+                >
+                  Cancel
+                </button>
+              )}
               <button
                 type="submit"
                 disabled={isSubmitting || isUploading}

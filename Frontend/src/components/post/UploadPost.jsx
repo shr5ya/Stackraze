@@ -4,6 +4,8 @@ import { X, Image, Send, Globe, Loader2 } from "lucide-react";
 import { uploadMultipleImagesToCloudinary } from "../../utils/cloudinaryUpload";
 import { resolveAvatar } from "../../utils/avatarHelper";
 import { Avatar1 } from "../../assets/Avatars";
+// import Doodle from "@/assets/doodle.jpg"
+import PostTextInput from "./PostTextInput";
 
 // Compact inline component (what user sees on the page)
 function UploadPostCompact({ onClick }) {
@@ -39,8 +41,8 @@ function UploadPostCompact({ onClick }) {
     <div
       onClick={onClick}
       className="bg-white dark:bg-neutral-900 rounded-xl p-3 cursor-pointer 
-             hover:bg-neutral-50 dark:hover:bg-neutral-800/50 
-             transition-colors border border-neutral-200 dark:border-neutral-800"
+             hover:bg-neutral-50 dark:hover:bg-neutral-800
+             border border-neutral-200 dark:border-neutral-800"
     >
       {/* Avatar + Placeholder */}
       <div className="flex items-center gap-2">
@@ -53,7 +55,7 @@ function UploadPostCompact({ onClick }) {
         ) : (
           <div
             className="w-9 h-9 rounded-full 
-                      bg-gradient-to-br from-blue-500 to-purple-600 
+                      bg-gradient-to-br from-zinc-500 to-zinc-600 
                       flex items-center justify-center 
                       text-white font-semibold text-xs"
           >
@@ -77,7 +79,7 @@ function UploadPostCompact({ onClick }) {
       {/* Divider + Toolbar */}
       <div className="border-t border-neutral-200 dark:border-neutral-800 mt-2 pt-2 ml-10">
         <div className="flex items-center justify-between">
-          <button className="p-1.5 rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors">
+          <button className="p-1.5 rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-800">
             <Image className="w-5 h-5 text-blue-500" />
           </button>
 
@@ -217,8 +219,8 @@ function UploadPostModal({ onClose, onSubmit }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-neutral-900 w-full max-w-[600px] rounded-2xl max-h-[85vh] flex flex-col shadow-2xl">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-6 md:p-4">
+      <div className="bg-white dark:bg-neutral-900 w-full max-w-[500px] md:max-w-[750px] rounded-2xl h-[450px] md:h-[600px] max-h-[85vh] flex flex-col shadow-2xl">
         {/* Header with User Info */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-neutral-200 dark:border-neutral-800">
           {/* User Info */}
@@ -255,28 +257,20 @@ function UploadPostModal({ onClose, onSubmit }) {
         </div>
 
         {/* Content Area */}
-        <div className="flex-1 overflow-y-auto p-5">
+        <div className="flex-1 flex flex-col p-5 overflow-hidden">
           {/* Text Input */}
-          <textarea
-            value={content}
-            onChange={(e) => {
-              const value = e.target.value.slice(0, MAX_CONTENT_LENGTH);
-              setContent(value);
-            }}
-            placeholder="Start writing..."
-            className="w-full min-h-[200px] bg-transparent text-neutral-800 dark:text-neutral-100 text-lg placeholder:text-neutral-400 dark:placeholder:text-neutral-500 resize-none focus:outline-none leading-relaxed"
-            autoFocus
-            disabled={isSubmitting}
-          />
-
-          {/* Character Count */}
-          <div className="text-right text-sm text-neutral-400 dark:text-neutral-500 mb-4">
-            {content.length}/{MAX_CONTENT_LENGTH}
+          <div className="flex-1 w-full min-h-0 flex flex-col relative">
+            <PostTextInput
+              content={content}
+              setContent={setContent}
+              maxLength={MAX_CONTENT_LENGTH}
+              isSubmitting={isSubmitting}
+            />
           </div>
 
           {/* Upload Progress Indicator */}
           {isSubmitting && uploadProgress.total > 0 && (
-            <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+            <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
               <div className="flex items-center gap-2 mb-2">
                 <Loader2 className="w-4 h-4 text-blue-500 animate-spin" />
                 <span className="text-sm text-blue-700 dark:text-blue-300 font-medium">
@@ -292,7 +286,7 @@ function UploadPostModal({ onClose, onSubmit }) {
 
           {/* Image Previews */}
           {images.length > 0 && (
-            <div className="flex gap-3 overflow-x-auto pb-2 pt-2 border-t border-neutral-100 dark:border-neutral-800">
+            <div className="mt-auto pt-4 flex justify-start gap-3 overflow-x-auto border-t border-neutral-100 dark:border-neutral-800">
               {images.map((img, index) => (
                 <div key={index} className="relative flex-shrink-0">
                   <img
@@ -320,8 +314,8 @@ function UploadPostModal({ onClose, onSubmit }) {
             onClick={() => fileInputRef.current?.click()}
             disabled={images.length >= MAX_IMAGES || isSubmitting}
             className={`flex items-center gap-2 px-5 py-2.5 rounded-full transition-all font-medium ${images.length >= MAX_IMAGES || isSubmitting
-                ? "bg-neutral-200 dark:bg-neutral-700 text-neutral-400 cursor-not-allowed"
-                : "bg-neutral-200 dark:bg-neutral-700 hover:bg-neutral-300 dark:hover:bg-neutral-600 text-neutral-700 dark:text-neutral-200"
+              ? "bg-neutral-200 dark:bg-neutral-700 text-neutral-400 cursor-not-allowed"
+              : "bg-neutral-200 dark:bg-neutral-700 hover:bg-neutral-300 dark:hover:bg-neutral-600 text-neutral-700 dark:text-neutral-200"
               }`}
           >
             <Image className="w-5 h-5" />
@@ -347,8 +341,8 @@ function UploadPostModal({ onClose, onSubmit }) {
             onClick={handleSubmit}
             disabled={isSubmitting || (!content.trim() && images.length === 0)}
             className={`flex items-center gap-2 px-6 py-2.5 rounded-full transition-all font-semibold text-sm ${isSubmitting || (!content.trim() && images.length === 0)
-                ? "bg-neutral-300 dark:bg-neutral-700 text-neutral-500 cursor-not-allowed"
-                : "bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 hover:bg-black dark:hover:bg-neutral-100 shadow-lg"
+              ? "bg-neutral-300 dark:bg-neutral-700 text-neutral-500 cursor-not-allowed"
+              : "bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 hover:bg-black dark:hover:bg-neutral-100 shadow-lg"
               }`}
           >
             {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}

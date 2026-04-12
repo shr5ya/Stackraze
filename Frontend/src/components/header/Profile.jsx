@@ -92,7 +92,7 @@ const ProfileButton = () => {
               Profile
             </Link>
 
-            {/* <Link
+            <Link
               to="/settings"
               onClick={() => setIsOpen(false)}
               className="flex items-center gap-3 px-4 py-2.5 text-sm text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
@@ -102,7 +102,7 @@ const ProfileButton = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
               Settings
-            </Link> */}
+            </Link>
 
             {/* <Link
               to="/bookmarks"
