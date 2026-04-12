@@ -4,7 +4,7 @@ export async function refineText(content, instruction) {
   try {
 
     if (!apiKey) {
-      throw new Error("Missing API key");
+      throw new Error("Missing API key!");
     }
 
     const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
