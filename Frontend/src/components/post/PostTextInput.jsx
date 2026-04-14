@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Loader2 } from "lucide-react";
-import { refineText } from "@/utils/OpenRouter";
+import { refineText } from "@/utils/openRouter";
 
 function PostTextInput({ content, setContent, maxLength, isSubmitting }) {
   const [isRefining, setIsRefining] = useState(false);
