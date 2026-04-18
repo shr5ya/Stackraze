@@ -29,7 +29,7 @@ const Footer = () => {
         {/* Brand */}
         <div className="mb-12 md:mb-0">
           <span className="text-2xl font-bold uppercase tracking-wide text-gray-900 dark:text-zinc-100">
-            Algyñ
+            Stackraze
           </span>
         </div>
 
@@ -63,7 +63,7 @@ const Footer = () => {
               <h3 className="font-bold text-gray-800 dark:text-zinc-200 mb-5">Follow Us</h3>
               <ul className="space-y-4 text-gray-600 dark:text-zinc-400">
                 <li>
-                  <a href="https://github.com/abhishekkksharma/Algyñ" target="_blank" rel="noopener noreferrer"
+                  <a href="https://github.com/abhishekkksharma/Stackraze" target="_blank" rel="noopener noreferrer"
                     className="flex items-center gap-2 hover:text-gray-900 dark:hover:text-zinc-100">
                     <GitHubIcon /> GitHub
                   </a>
@@ -88,7 +88,7 @@ const Footer = () => {
           {/* Bottom bar */}
           <div className="flex flex-col sm:flex-row items-center justify-between w-full border-t border-gray-200 dark:border-zinc-800 pt-6">
             <p className="text-xs text-gray-500 dark:text-zinc-500 mb-4 sm:mb-0">
-              © {year} Algyñ. All rights reserved.
+              © {year} Stackraze. All rights reserved.
             </p>
             <p className="text-xs text-gray-500 dark:text-zinc-500">
               Built for the developer community 

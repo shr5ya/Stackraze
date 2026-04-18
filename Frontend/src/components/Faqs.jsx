@@ -5,7 +5,7 @@ const defaultFaqs = [
   {
     question: "How do I reset my password?",
     answer:
-      "Please send a mail to abhisheksharma7340733@gmail.com with your details and we'll change your password as requested. Or try filling contact form with your concern.",
+      "Please send a mail to algyn.connect@gmail.com with your details and we'll change your password as requested. Or try filling contact form with your concern.",
   },
   {
     question: "Do you offer custom pricing plans?",

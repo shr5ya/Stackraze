@@ -1,4 +1,4 @@
-import Video from "../../assets/algyn_video.mp4";
+import Video from "../../assets/algyn_video3.mp4";
 
 function Section2() {
   return (
@@ -6,7 +6,7 @@ function Section2() {
       <div className="max-w-5xl mx-auto px-6 py-16 md:py-24 flex flex-col md:flex-row items-center gap-12 md:gap-16">
 
         {/* Left — Video */}
-        <div className="w-70 sm:w-62 md:w-94 aspect-square shrink-0 flex justify-center items-center rounded-full overflow-hidden">
+        <div className="w-70 sm:w-62 md:w-94 aspect-square shrink-0 flex justify-center opacity-80 items-center rounded-full overflow-hidden">
           <video
             src={Video}
             autoPlay
@@ -26,11 +26,11 @@ function Section2() {
             No developer should have to solve problems alone.
           </h2>
           <p className="text-base text-gray-500 dark:text-zinc-400 leading-relaxed">
-            Algyñ is a developer community platform built to foster meaningful
+            Stackraze is a developer community platform built to foster meaningful
             collaboration, continuous learning, and open-source innovation. We
             believe great ideas grow stronger when shared. Whether you're
             debugging a stubborn 2AM error, preparing for your next hackathon,
-            exploring a new framework, or contributing to open source — Algyñ
+            exploring a new framework, or contributing to open source — Stackraze
             connects you with peers who are ready to build, learn, and grow
             alongside you.
           </p>

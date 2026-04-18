@@ -24,10 +24,10 @@ function Hero() {
           <img
             src={community}
             className="h-10 sm:h-12 md:h-14 lg:h-16"
-            alt="Algyñ logo"
+            alt="Stackraze logo"
           />
 
-          <p>Algyñ</p>
+          <p>Stackraze</p>
         </div>
       </div>
 

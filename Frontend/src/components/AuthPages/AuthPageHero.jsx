@@ -47,7 +47,7 @@ function AuthPageHero() {
           </div>
           <div className="flex justify-center items-center mt-8 hero-animate">
             <p className="tracking-widest text-4xl font-light text-zinc-800 dark:text-zinc-100">
-              Get Started with Algyñ
+              Get Started with Stackraze
             </p>
           </div>
         </div>

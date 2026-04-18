@@ -13,7 +13,7 @@ function contact() {
     {
       question: "How do I reset my password?",
       answer:
-        "Please send an email to s8reya@gmail.com with your details and we'll change your password as requested. You can also try filling out the contact form with your concern.",
+        "Please send an email to algyn.connect@gmail.com with your details and we'll change your password as requested. You can also try filling out the contact form with your concern.",
     },
     {
       question: "How do I delete my account permanently?",
@@ -48,7 +48,7 @@ function contact() {
     {
       question: "How can I contact the support team?",
       answer:
-        "You can reach our support team by sending an email to abhisheksharma7340733@gmail.com or by filling out the contact form on the website.",
+        "You can reach our support team by sending an email to algyn.connect@gmail.com or by filling out the contact form on the website.",
     },
     {
       question: "Do I need an account to explore the platform?",
