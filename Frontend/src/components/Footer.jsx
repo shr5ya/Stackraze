@@ -63,7 +63,8 @@ const Footer = () => {
               <h3 className="font-bold text-gray-800 dark:text-zinc-200 mb-5">Follow Us</h3>
               <ul className="space-y-4 text-gray-600 dark:text-zinc-400">
                 <li>
-                  <a href="https://github.com/abhishekkksharma/Stackraze" target="_blank" rel="noopener noreferrer"
+                  <a href="https://github.com/shr5ya/Stackraze.git" target="_blank" rel="noopener noreferrer"
+                  
                     className="flex items-center gap-2 hover:text-gray-900 dark:hover:text-zinc-100">
                     <GitHubIcon /> GitHub
                   </a>

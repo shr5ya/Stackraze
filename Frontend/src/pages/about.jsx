@@ -39,7 +39,7 @@ const About = () => {
     {
       question: "How can I contact the support team?",
       answer:
-        "You can reach our support team by sending an email to abhisheksharma7340733@gmail.com or by filling out the contact form on the website.",
+        "You can reach our support team by sending an email to algyn.connect@gmail.com or by filling out the contact form on the website.",
     },
     {
       question: "Do I need an account to explore the platform?",
