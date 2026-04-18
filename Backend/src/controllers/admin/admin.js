@@ -1,7 +1,7 @@
 const User = require('../../models/user');
 const Contact = require("../../models/contactFrom");
 
-
+// Fetch all users and contact submissions for admin-level access
 
 async function handleGetAllusers(req,res) {
     const users = await User.find({});

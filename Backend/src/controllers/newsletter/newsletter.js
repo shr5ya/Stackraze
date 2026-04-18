@@ -7,6 +7,7 @@ async function handleCreateNewsletter(req, res) {
     const { title, content, category, summary, coverImage } = req.body;
     const author = req.user.id;
 
+    // Putting Basic validation to avoid empty/low-quality posts
     if (!title || !title.trim()) {
       return res.status(400).json({ message: "Title is required" });
     }
@@ -31,6 +32,7 @@ async function handleCreateNewsletter(req, res) {
       author,
     });
 
+    // Attach author's details before sending response
     newsletter = await newsletter.populate("author", "username name avatar");
 
     return res.status(201).json({

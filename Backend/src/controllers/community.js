@@ -74,7 +74,7 @@ exports.getCommunityMessages = async (req, res) => {
       .sort({ createdAt: -1 }) // Newest first for easy limit
       .limit(parseInt(limit));
       
-    // Return in chronological order (oldest first)
+    // Reverse to send oldest → newest (UI-friendly order)
     res.status(200).json(messages.reverse());
   } catch (error) {
     console.error('Error fetching messages:', error);

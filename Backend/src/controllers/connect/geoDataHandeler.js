@@ -38,6 +38,7 @@ async function handleGetUserLocation(req, res) {
   try {
     const userId = req.user?.id;
 
+    // This assumes auth middleware already injected req.user
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });
     }
@@ -47,6 +48,7 @@ async function handleGetUserLocation(req, res) {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
+    // Covers both null and empty object cases
 
     if (!user.location || !Object.keys(user.location).length) {
       return res.status(404).json({ message: "Location not set" });
@@ -73,7 +75,7 @@ async function handleSetUserGeodata(req, res) {
 
     const setPayload = {};
 
-    // Helper to safely trim strings
+    // Prevent storing garbage like numbers/objects in text fields
     const trimIfString = (val) =>
       typeof val === "string" ? val.trim() : undefined;
 
@@ -85,7 +87,7 @@ async function handleSetUserGeodata(req, res) {
       setPayload["location.placeName"] = trimIfString(placeName);
 
     // Coordinates validation
-    // Coordinates validation
+    // Validate coordinates before touching DB
     if (rawCoordinates !== undefined) {
       if (!Array.isArray(rawCoordinates) || rawCoordinates.length !== 2) {
         return res
@@ -134,6 +136,7 @@ async function handleSetUserGeodata(req, res) {
       message: "User location updated",
       location: user.location,
     });
+
   } catch (error) {
     return res.status(500).json({ message: "Internal server error" });
   }

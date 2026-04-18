@@ -7,6 +7,7 @@ const { generateOtp, sendOtpEmail } = require("../../utils/emailService");
 const JWT_SECRET = process.env.JWT_SECRET;
 const SALT_ROUNDS = 10;
 
+// Handle user signup with email verification (OTP-based flow)
 async function handleUserSignup(req, res) {
   try {
     const { name, username, email, password, avatar } = req.body || {};
@@ -17,6 +18,7 @@ async function handleUserSignup(req, res) {
         .json({ message: "name, username, email, and password are required" });
     }
 
+    // Prevent duplicate accounts (email + username uniqueness)
     const existingUser = await User.exists({ email });
     if (existingUser) {
       return res.status(409).json({ message: "User already exists" });
@@ -27,7 +29,7 @@ async function handleUserSignup(req, res) {
       return res.status(409).json({ message: "Username already taken" });
     }
 
-    // Hash the password
+   // Secure password before storing (never store raw passwords)
     const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
 
     // Generate OTP for email verification
@@ -428,6 +430,7 @@ async function handleGetProfileByUsername(req, res) {
     console.error("Error fetching profile:", err);
     return res.status(500).json({ error: "Internal server error" });
   }
+  
 }
 
 async function handleSavePostToUserData(req, res) {
@@ -499,12 +502,14 @@ async function handleGetSavedPosts(req, res) {
       savedPosts: user.savedPosts
     });
 
+
   } catch (error) {
     res.status(500).json({
       message: "Server error",
       error: error.message
     });
   }
+
 }
 
 module.exports = {

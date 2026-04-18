@@ -1,11 +1,13 @@
 const Post = require("../../models/post");
 const User = require("../../models/user");
 
+// Create a new post with optional media
 async function handleCreatePost(req, res) {
   try {
     const { content, photos, isPublic } = req.body;
     const author = req.user.id;
 
+    // Prevent empty or overly long posts
     if (!content || content.length > 800) {
       return res.status(400).json({
         message: "Content is required and must be under 200 characters",
@@ -19,6 +21,7 @@ async function handleCreatePost(req, res) {
       author,
     });
 
+    // Populate author info for immediate frontend use
     post = await post.populate("author", "username name avatar");
 
     return res.status(201).json({

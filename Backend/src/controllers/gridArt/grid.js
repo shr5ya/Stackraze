@@ -3,6 +3,7 @@ const Grid = require("../../models/gridArt")
 async function handleAddGridArt(req, res) {
   try {
 
+    // Basic validation to avoid storing incomplete/broken grid data
     const { rows, cols, color, grid } = req.body;
 
     if (!rows || !cols || !grid) {
@@ -17,7 +18,7 @@ async function handleAddGridArt(req, res) {
       color,
       grid
     });
-
+// Successfully created grid (response kept minimal intentionally)
     return res.status(201).json({
       message: "Grid created successfully",
     //   data: savedGrid
@@ -56,6 +57,7 @@ async function handleGetGrids(req, res) {
     });
 
   }
+  
 }
 
 
