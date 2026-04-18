@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { io } from 'socket.io-client';
 import { API_URL } from '../../config/api';
-import { Send, Hash, ChevronLeft } from 'lucide-react';
+import { Send, Hash, ChevronLeft, MessageSquare, Users, CircleDot } from 'lucide-react';
 import { resolveAvatar } from '../../utils/avatarHelper';
 
 const CommunityChat = ({ community, user, onBack }) => {
@@ -21,7 +21,6 @@ const CommunityChat = ({ community, user, onBack }) => {
     messagesEndRef.current?.scrollIntoView({ behavior });
   }, []);
 
-  // Fetch older messages
   const fetchMessages = useCallback(async (before = null) => {
     if (before) setLoadingMore(true);
     else setLoading(true);
@@ -40,7 +39,6 @@ const CommunityChat = ({ community, user, onBack }) => {
         }
 
         if (before) {
-          // Store current scroll height to restore position after prepend
           if (scrollContainerRef.current) {
             prevScrollHeight.current = scrollContainerRef.current.scrollHeight;
           }
@@ -61,19 +59,16 @@ const CommunityChat = ({ community, user, onBack }) => {
   useEffect(() => {
     if (!community || !user) return;
 
-    // Reset state for new community
     setMessagesMap([]);
     setHasMore(true);
     isInitialLoad.current = true;
     
-    // Connect to Socket
     const newSocket = io(API_URL);
     setSocket(newSocket);
     newSocket.emit('join_community', community._id);
 
     newSocket.on('receive_message', (message) => {
       setMessagesMap((prev) => [...prev, message]);
-      // Small delay to ensure DOM is updated
       setTimeout(() => scrollToBottom('smooth'), 50);
     });
 
@@ -85,7 +80,6 @@ const CommunityChat = ({ community, user, onBack }) => {
     };
   }, [community?._id, user, fetchMessages, scrollToBottom]);
 
-  // Handle scroll to top logic
   useEffect(() => {
     const scrollContainer = scrollContainerRef.current;
     if (!scrollContainer) return;
@@ -103,7 +97,6 @@ const CommunityChat = ({ community, user, onBack }) => {
     return () => scrollContainer.removeEventListener('scroll', handleScroll);
   }, [hasMore, loadingMore, loading, messagesMap, fetchMessages]);
 
-  // Adjust scroll position after prepending older messages
   useEffect(() => {
     if (loadingMore === false && prevScrollHeight.current > 0 && scrollContainerRef.current) {
       const scrollContainer = scrollContainerRef.current;
@@ -114,7 +107,6 @@ const CommunityChat = ({ community, user, onBack }) => {
     }
   }, [loadingMore]);
 
-  // Initial scroll to bottom
   useEffect(() => {
     if (isInitialLoad.current && messagesMap.length > 0) {
       scrollToBottom('auto');
@@ -145,92 +137,156 @@ const CommunityChat = ({ community, user, onBack }) => {
     );
   }
 
+  const groupMessagesByDate = (messages) => {
+    const groups = [];
+    let currentDate = '';
+    
+    messages.forEach((msg) => {
+      if (!msg.createdAt) return;
+      const dateObj = new Date(msg.createdAt);
+      const date = dateObj.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      }).toUpperCase();
+      
+      if (date !== currentDate) {
+        currentDate = date;
+        groups.push({ type: 'date', date, _id: `date-${date}` });
+      }
+      groups.push({ type: 'message', ...msg });
+    });
+    
+    return groups;
+  };
+
+  const displayItems = groupMessagesByDate(messagesMap);
+
   return (
-    <div className="flex-1 flex flex-col bg-transparent overflow-hidden h-full w-full">
-      {/* Header */}
-      <div className="flex items-center px-4 md:px-6 py-4 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950/50 z-10 justify-between">
-        <div className="flex items-center">
+    <div className="flex-1 flex flex-col bg-white dark:bg-zinc-950 overflow-hidden h-full w-full">
+      {/* Header aligned with requested design */}
+      <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-950 z-10 rounded-t-2xl">
+        <div className="flex items-center gap-3">
           <button 
             onClick={onBack} 
-            className="md:hidden mr-3 p-1.5 -ml-2 rounded-lg text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-zinc-800 dark:hover:text-zinc-100 transition-colors"
-            aria-label="Back to communities"
+            className="md:hidden mr-1 p-1.5 -ml-2 rounded-lg text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
           >
             <ChevronLeft size={22} />
           </button>
-          <div className="flex flex-col">
-            <h2 className="font-semibold text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5">
-              <Hash size={16} className="text-zinc-400" />
-              {community.name}
-            </h2>
-            {community.description && <p className="text-xs text-zinc-500 dark:text-zinc-500 mt-0.5">{community.description}</p>}
+          
+          <div className="bg-black text-white p-2.5 rounded-xl">
+            <MessageSquare size={20} className="fill-current" />
           </div>
+          
+          <div className="flex flex-col">
+            <h2 className="font-semibold text-[15px] text-zinc-900 dark:text-zinc-100">
+              Community Chat
+            </h2>
+            <div className="flex items-center gap-1.5 mt-0.5">
+              <CircleDot size={10} className="text-emerald-500 fill-emerald-500" />
+              <span className="text-xs text-zinc-500 font-medium tracking-wide">1 online</span>
+            </div>
+          </div>
+        </div>
+        
+        <div className="flex items-center justify-center px-3 py-1.5 border border-zinc-200 dark:border-zinc-800 rounded-full gap-2">
+          <Users size={14} className="text-zinc-500" />
+          <span className="text-xs font-medium text-zinc-500">1</span>
         </div>
       </div>
 
       {/* Messages Window */}
       <div 
         ref={scrollContainerRef}
-        className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 scrollbar-hide"
+        className="flex-1 overflow-y-auto p-4 md:p-6 scrollbar-hide flex flex-col gap-6"
       >
         {loadingMore && (
           <div className="flex justify-center py-2">
-            <div className="w-5 h-5 border-2 border-zinc-300 dark:border-zinc-700 border-t-zinc-800 dark:border-t-zinc-300 animate-spin rounded-full"></div>
+            <div className="w-5 h-5 border-2 border-zinc-300 dark:border-zinc-700 border-t-zinc-800 animate-spin rounded-full"></div>
           </div>
         )}
 
         {loading ? (
           <div className="flex justify-center items-center h-full">
-             <div className="w-5 h-5 border-2 border-zinc-300 dark:border-zinc-700 border-t-zinc-800 dark:border-t-zinc-300 animate-spin rounded-full"></div>
+             <div className="w-5 h-5 border-2 border-zinc-300 border-t-zinc-800 animate-spin rounded-full"></div>
           </div>
-        ) : messagesMap.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-zinc-400 dark:text-zinc-600">
-            <p className="text-sm">This is the beginning of the #{community.name} community.</p>
+        ) : displayItems.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-full text-zinc-400">
+            <p className="text-sm">This is the beginning of the chat.</p>
           </div>
         ) : (
-          messagesMap.map((msg, index) => {
+          displayItems.map((item, index) => {
+            if (item.type === 'date') {
+              return (
+                <div key={item._id} className="relative flex justify-center py-2">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-zinc-100 dark:border-zinc-800"></div>
+                  </div>
+                  <div className="relative bg-white dark:bg-zinc-950 px-4 text-[10px] font-semibold text-zinc-400 tracking-wider">
+                    {item.date}
+                  </div>
+                </div>
+              );
+            }
+
+            const msg = item;
             const isMe = msg.senderId?._id === (user._id || user.id) || msg.senderId === (user._id || user.id);
             const senderName = msg.senderId?.username || msg.senderId?.name || 'Unknown';
             const senderAvatar = resolveAvatar(msg.senderId?.avatar);
             const userInitial = senderName.charAt(0).toUpperCase();
+            const timeString = msg.createdAt ? new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
 
             return (
-              <div key={msg._id || index} className={`flex group ${isMe ? 'justify-end' : 'justify-start'}`}>
+              <div key={msg._id || index} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
                 {!isMe && (
-                   <div className="flex-shrink-0 mr-3">
+                  <div className="flex-shrink-0 mr-3 mt-4 mt-auto mb-1">
                     {senderAvatar ? (
-                      <img
-                        src={senderAvatar}
-                        alt={senderName}
-                        className="w-9 h-9 rounded-full object-cover ring-1 ring-zinc-200 dark:ring-zinc-800"
-                      />
+                      <img src={senderAvatar} alt={senderName} className="w-8 h-8 rounded-full object-cover shadow-sm bg-white" />
                     ) : (
-                      <div className="w-9 h-9 rounded-full bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center text-zinc-600 dark:text-zinc-300 font-bold text-sm">
+                      <div className="w-8 h-8 rounded-full bg-orange-500 text-white flex items-center justify-center font-semibold text-xs shadow-sm">
                         {userInitial}
                       </div>
                     )}
                   </div>
                 )}
                 
-                <div className={`flex flex-col max-w-[85%] md:max-w-[70%] ${isMe ? 'items-end' : 'items-start'}`}>
-                  {!isMe && (
-                    <div className="flex items-center gap-2 mb-1 pl-1">
-                      <span className="text-sm font-medium text-zinc-800 dark:text-zinc-200">{senderName}</span>
-                      <span className="text-[10px] text-zinc-400 dark:text-zinc-600">
-                        {msg.createdAt ? new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
-                      </span>
-                    </div>
-                  )}
+                <div className={`flex flex-col max-w-[80%] md:max-w-[65%] ${isMe ? 'items-end' : 'items-start'}`}>
+                  <div className={`flex items-center gap-1.5 mb-1 ${isMe ? 'flex-row-reverse' : ''}`}>
+                    {isMe ? (
+                      <>
+                        <span className="text-[11px] font-medium text-zinc-700 dark:text-zinc-300">You</span>
+                        <span className="text-[10px] text-zinc-400">{timeString}</span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="text-[11px] font-medium text-zinc-700 dark:text-zinc-300">{senderName}</span>
+                        <span className="text-[10px] text-zinc-400">{timeString}</span>
+                      </>
+                    )}
+                  </div>
                   
                   <div
-                    className={`px-4 py-2.5 rounded-2xl text-[14px] shadow-sm ${
+                    className={`px-4 py-2.5 shadow-sm text-sm ${
                       isMe
-                        ? 'bg-zinc-800 text-zinc-50 dark:bg-zinc-200 dark:text-zinc-900 rounded-br-sm'
-                        : 'bg-white text-zinc-800 dark:bg-zinc-800 dark:text-zinc-200 rounded-bl-sm border border-zinc-100 dark:border-zinc-700/50'
+                        ? 'bg-black text-white dark:bg-white dark:text-black rounded-2xl rounded-br-sm'
+                        : 'bg-white text-zinc-800 dark:bg-zinc-900 dark:text-zinc-200 rounded-2xl rounded-bl-sm border border-zinc-100 dark:border-zinc-800'
                     }`}
                   >
                     <p className="whitespace-pre-wrap leading-relaxed">{msg.text}</p>
                   </div>
                 </div>
+
+                {isMe && (
+                  <div className="flex-shrink-0 ml-3 mt-4">
+                    {senderAvatar ? (
+                      <img src={senderAvatar} alt="You" className="w-8 h-8 rounded-full object-cover shadow-sm bg-white" />
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-zinc-800 text-white flex items-center justify-center font-semibold text-xs shadow-sm">
+                        {userInitial}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             );
           })
@@ -239,21 +295,21 @@ const CommunityChat = ({ community, user, onBack }) => {
       </div>
 
       {/* Input Area */}
-      <div className="p-4 bg-white dark:bg-zinc-950/50 border-t border-zinc-200 dark:border-zinc-800">
+      <div className="px-4 py-4 md:px-6 md:py-5 border-t border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-b-2xl">
         <form onSubmit={handleSendMessage} className="relative flex items-center">
           <input
             type="text"
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
-            placeholder={`Message #${community.name}`}
-            className="w-full bg-zinc-100 dark:bg-zinc-900 border border-transparent dark:border-zinc-800 rounded-full pl-5 pr-12 py-3 text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-zinc-300 dark:focus:ring-zinc-700 transition-all placeholder-zinc-400 dark:placeholder-zinc-600 shadow-inner"
+            placeholder="Type a message..."
+            className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl pl-5 pr-14 py-3.5 text-[14px] text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-300 dark:focus:border-zinc-700 transition-colors placeholder-zinc-400"
           />
           <button
             type="submit"
             disabled={!newMessage.trim()}
-            className="absolute right-1.5 p-2 rounded-full text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 disabled:opacity-30 transition-colors"
+            className="absolute right-2 p-2 bg-zinc-400 rounded-lg text-white hover:bg-zinc-500 disabled:opacity-40 disabled:hover:bg-zinc-400 transition-colors"
           >
-            <Send size={18} />
+            <Send size={16} />
           </button>
         </form>
       </div>
