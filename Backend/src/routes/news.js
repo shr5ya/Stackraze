@@ -4,15 +4,18 @@ const fs = require('fs');
 const path = require('path');
 const dotenv = require('dotenv');
 
+// Acts as a proxy to NewsAPI (hides API key from frontend)
 router.get('/articles', async (req, res) => {
     try {
         const { q, domains, from, pageSize, sortBy, language } = req.query;
         
+
+         // Fallback: load API key from local env file if not in process.env
         const envPath = path.join(__dirname, '../config/config.env');
         const envConfig = fs.existsSync(envPath) ? dotenv.parse(fs.readFileSync(envPath)) : {};
         const apiKey = process.env.VITE_NEWS_API_KEY || process.env.NEWS_API_KEY || envConfig.NEWS_API_KEY || '';
         
-        // Build the NewsAPI URL
+         // Build query string dynamically based on request params
         const queryParams = new URLSearchParams({
             q: q || '',
             domains: domains || '',
@@ -27,6 +30,7 @@ router.get('/articles', async (req, res) => {
 
         const response = await fetch(url);
         
+        // Forward API errors directly to client for transparency
         if (!response.ok) {
             return res.status(response.status).json({ 
                 status: 'error', 
@@ -38,6 +42,8 @@ router.get('/articles', async (req, res) => {
         res.json(data);
     } catch (error) {
         console.error("NewsProxy Error:", error);
+
+        // Generic error response → avoid leaking internal details
         res.status(500).json({ status: 'error', message: "Failed to fetch from NewsAPI" });
     }
 });

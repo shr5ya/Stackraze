@@ -3,6 +3,7 @@ const {handleGetAllusers,handleGetContactInfo} = require('../controllers/admin/a
 
 const router = express.Router();
 
+// Admin routes to fetch users and contact form submissions
 router.get('/allusers',handleGetAllusers);
 router.get('/contactFroms',handleGetContactInfo);
 

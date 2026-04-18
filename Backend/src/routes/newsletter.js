@@ -10,10 +10,13 @@ const authMiddleware = require("../mildewares/authMiddleware");
 
 const router = express.Router();
 
+
+// Protected routes for managing newsletters (auth required)
 router.post("/create", authMiddleware, handleCreateNewsletter);
 router.get("/all", authMiddleware, handleGetNewsletters);
 router.get("/:id", authMiddleware, handleGetNewsletterById);
 router.patch("/:id", authMiddleware, handleUpdateNewsletter);
 router.delete("/:id", authMiddleware, handleDeleteNewsletter);
+
 
 module.exports = router;
