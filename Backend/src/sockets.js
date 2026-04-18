@@ -1,6 +1,7 @@
 const Message = require("./models/message");
 const Community = require("./models/community");
 
+// Initialize all socket event handlers
 function initializeSockets(io) {
   io.on("connection", (socket) => {
     console.log("A user connected:", socket.id);
@@ -11,18 +12,18 @@ function initializeSockets(io) {
       console.log(`User ${socket.id} joined community ${communityId}`);
     });
 
-    // Leave a specific community room
     socket.on("leave_community", (communityId) => {
       socket.leave(communityId);
       console.log(`User ${socket.id} left community ${communityId}`);
     });
 
-    // Handle sending message
+    // Handle sending message+broadcasting
     socket.on("send_message", async (data) => {
       try {
         const { communityId, senderId, text } = data;
         
         // Save message to database
+
         const newMessage = new Message({
           communityId,
           senderId,
@@ -30,10 +31,9 @@ function initializeSockets(io) {
         });
         await newMessage.save();
 
-        // Populate sender info before broadcasting
+       // Attach sender details before emitting
         await newMessage.populate("senderId", "name email avatar username");
 
-        // Broadcast to everyone in the room
         io.to(communityId).emit("receive_message", newMessage);
       } catch (error) {
         console.error("Error sending message via socket:", error);

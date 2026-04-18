@@ -7,6 +7,7 @@ const initializeSockets = require("./src/sockets");
 
 const PORT = process.env.PORT || 5000;
 const MONGODB_URL = process.env.MONGODB_URL;
+// Create HTTP server and attach Socket.IO for real-time features
 
 const server = http.createServer(app);
 const io = new Server(server, {
