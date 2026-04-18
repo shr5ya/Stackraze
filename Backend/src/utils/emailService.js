@@ -9,15 +9,14 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-/**
- * Generate a random 6-digit OTP
- */
+
+/*** Generate a random 6-digit OTP*/
 function generateOtp() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
 /**
- * Send OTP email to the user
+ * Send OTP email with a simple , user - friendly template
  * @param {string} email - Recipient email
  * @param {string} otp - The OTP code
  * @param {string} name - User's name for personalization
@@ -60,6 +59,7 @@ async function sendOtpEmail(email, otp, name = "there") {
     `,
   };
 
+  // Send email (throws if SMTP fails)
   await transporter.sendMail(mailOptions);
 }
 
