@@ -54,29 +54,25 @@ function Contact() {
              transition-colors duration-300"
       >
         {/* Image Section */}
-        <div
-          className="md:w-1/2 w-full bg-gray-50 dark:bg-black dark:border dark:border-gray-900
-             flex items-center justify-center 
-             p-6 rounded-2xl overflow-hidden group relative"
-        >
-          {/* Default Image (NOT absolute) */}
-          <img
-            src={ContactBW}
-            alt="Contact Black and White"
-            className="w-full h-full object-cover
-               transition-opacity duration-500
-               group-hover:opacity-0"
-          />
+     <div className="w-full md:w-1/2">
+  <div className="relative w-full h-[350px] md:h-full group overflow-hidden rounded-2xl">
+    
+    {/* Default (BW) Image */}
+    <img
+      src={ContactBW}
+      alt="Contact Black and White"
+      className="absolute inset-0 w-full h-full object-cover transition-all duration-1000 ease-in-out group-hover:scale-105"
+    />
 
-          {/* Hover Image */}
-          <img
-            src={ContactColor}
-            alt="Contact Colored"
-            className="w-full h-full object-cover absolute inset-0
-               opacity-0 group-hover:opacity-100
-               transition-opacity duration-500"
-          />
-        </div>
+    {/* Hover (Color) Image */}
+    <img
+      src={ContactColor}
+      alt="Contact Colored"
+      className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-1000 ease-in-out"
+    />
+    
+  </div>
+</div>
 
         {/* Form Section */}
         <div className="md:w-1/2 w-full p-6 md:p-8">

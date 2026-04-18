@@ -23,7 +23,7 @@ function Hero() {
 
           <img
             src={community}
-            className="h-10 sm:h-12 md:h-14 lg:h-16"
+            className="h-15 sm:h-13 md:h-15 lg:h-19"
             alt="Stackraze logo"
           />
 
