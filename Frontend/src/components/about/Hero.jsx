@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 import community from "../../assets/community.png";
 import { A, B, C } from "../../assets/about/index";
 
@@ -14,28 +15,31 @@ function Hero() {
           Get your problems solved
         </p>
 
-        {/* Main Heading */}
-        <div className="flex flex-wrap justify-center items-center gap-3 mt-4 
-                        text-3xl sm:text-4xl md:text-5xl lg:text-6xl 
-                        font-bold drop-shadow-lg text-zinc-800 dark:text-zinc-100">
-          
-          <p>Start connecting with</p>
+ {/* Main Heading Section - Balanced & Impactful */}
+<div className="flex flex-wrap justify-center items-center gap-3 mt-6 
+                text-2xl sm:text-4xl md:text-5xl lg:text-6xl 
+                font-bold text-zinc-900 dark:text-zinc-100">
+  
+  <p>Start connecting with</p>
 
-          <img
-            src={community}
-            className="h-15 sm:h-13 md:h-15 lg:h-19"
-            alt="Stackraze logo"
-          />
+  <motion.img
+    animate={{ y: [0, -10, 0] }}
+    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+    src={community}
+    /* Scaled up to h-24 to match the 6xl text weight */
+    className="h-12 sm:h-18 md:h-22 lg:h-24 w-auto object-contain drop-shadow-md mx-2"
+    alt="Stackraze logo"
+  />
 
-          <p>Stackraze</p>
-        </div>
-      </div>
+  <p className="text-zinc-900 dark:text-white">
+    Stackraze
+  </p>
+</div>
+</div>
 
       {/* Avatars Section */}
       <div className="mt-10">
-
         <div className="flex justify-center relative">
-
           <img
             src={A}
             alt="Avatar A"
@@ -43,8 +47,7 @@ function Hero() {
                        rounded-full border-4 border-white shadow-lg z-10"
             onError={(e) => {
               e.target.onerror = null;
-              e.target.src =
-                "https://placehold.co/80x80/F9D4D5/333333?text=A";
+              e.target.src = "https://placehold.co/80x80/F9D4D5/333333?text=A";
             }}
           />
 
@@ -56,8 +59,7 @@ function Hero() {
                        -ml-3 sm:-ml-4 z-10"
             onError={(e) => {
               e.target.onerror = null;
-              e.target.src =
-                "https://placehold.co/80x80/C9E5FF/333333?text=B";
+              e.target.src = "https://placehold.co/80x80/C9E5FF/333333?text=B";
             }}
           />
 
@@ -69,8 +71,7 @@ function Hero() {
                        -ml-3 sm:-ml-4"
             onError={(e) => {
               e.target.onerror = null;
-              e.target.src =
-                "https://placehold.co/80x80/FFF5C1/333333?text=C";
+              e.target.src = "https://placehold.co/80x80/FFF5C1/333333?text=C";
             }}
           />
         </div>
@@ -82,7 +83,6 @@ function Hero() {
             Connect | Collaborate | Learn
           </p>
         </div>
-
       </div>
 
     </div>
