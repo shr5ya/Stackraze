@@ -1,11 +1,13 @@
 const mongoose = require("mongoose");
 
+
+// Schema for community groups (used for chat + user grouping)
 const communitySchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
     trim: true,
-    unique: true
+    unique: true   // ensures no duplicate community names
   },
   description: {
     type: String,
@@ -13,13 +15,13 @@ const communitySchema = new mongoose.Schema({
   },
   isDefault: {
     type: Boolean,
-    default: false
+    default: false  // used to identify default communities like "General" or "Announcements" basically community names that are reserved and cannot be created by users
   },
   members: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User"
+    ref: "User"  //reference to users in this community
   }]
-}, { timestamps: true });
+}, { timestamps: true });  // auto adds createdAt and updatedAt fields
 
 const Community = mongoose.model("Community", communitySchema);
 
