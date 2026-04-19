@@ -7,11 +7,15 @@ const EditProfileButton = ({ showLabel = true, className = "" }) => {
 
   return (
     <>
+      {/* Button to trigger edit profile modal */}
       <button
         onClick={() => setIsOpen(true)}
         className={`hover:text-gray-600 dark:hover:text-gray-300 transition-colors flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-800 ${className}`}
       >
         <Pen className="w-4 h-4 sm:w-5 sm:h-5" />
+
+
+        {/* Optional label (hidden on small screens) */}
         {showLabel && (
           <span className="text-sm font-medium hidden sm:inline">
             Edit Profile
@@ -19,6 +23,7 @@ const EditProfileButton = ({ showLabel = true, className = "" }) => {
         )}
       </button>
 
+      {/* Modal controlled via local state */}
       <EditProfileModal
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}

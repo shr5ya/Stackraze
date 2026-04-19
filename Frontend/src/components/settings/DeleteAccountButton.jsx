@@ -8,18 +8,22 @@ function DeleteAccountButton() {
   const { showPopup } = usePopup();
 
   const handleDelete = async () => {
-    const confirmDelete = window.confirm("Are you sure you want to delete your account?");
-    if (!confirmDelete) return;
 
+    
+     // Confirm destructive action before proceeding
+    
+     const confirmDelete = window.confirm("Are you sure you want to delete your account?");
+    if (!confirmDelete) return;
     try {
       setLoading(true);
-
       const token = localStorage.getItem("token");
 
+// Ensure user is authenticated before making request
       if (!token) {
         showPopup("User not authenticated", "error");
         return;
       }
+
 
       const res = await fetch(`${API_URL}/user/account/abhi`, {
         method: "DELETE",
@@ -34,6 +38,7 @@ function DeleteAccountButton() {
       if (res.ok) {
         showPopup("Account deleted successfully", "success");
 
+        // Clear auth data and redirect to homepage
         setTimeout(() => {
           localStorage.removeItem("token");
           window.location.href = "/";

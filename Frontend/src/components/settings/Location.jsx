@@ -15,32 +15,33 @@ function Location() {
   const [locationDetails, setLocationDetails] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Fetch user's saved location from backend
   const fetchLocation = async () => {
     try {
-      setLoading(true);
       const token = localStorage.getItem("token");
+
       const res = await fetch(`${API_URL}/user/userlocation`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       if (res.ok) {
         const data = await res.json();
+
+
+        // Store coordinates + extra location info (city, state, etc.)
         if (data.location?.coordinates?.length > 0) {
           setUserCoordinates(data.location.coordinates);
-          setLocationDetails(data.location); // Store the whole object (city, state, etc.)
+          setLocationDetails(data.location);
         }
       }
     } catch (error) {
       console.error("Error fetching location:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchLocation();
   }, []);
-
   if (loading) return <div className="h-96 w-full animate-pulse bg-neutral-100 dark:bg-zinc-900 rounded-xl" />;
 
   return (
