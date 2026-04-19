@@ -1,6 +1,6 @@
-# Algyñ
+# Stackraze
 
-**Algyñ** is a full-stack community social platform where people can share posts, connect with nearby users, bookmark content, comment, and build a profile — all in one place.
+**Stackraze** is a full-stack community social platform where people can share posts, connect with nearby users, bookmark content, comment, and build a profile — all in one place.
 
 ---
 
@@ -51,7 +51,7 @@
 ## Project Structure
 
 ```
-Algyñ/
+Stackraze/
 ├── Frontend/                  # React + Vite app
 │   └── src/
 │       ├── pages/             # Page-level components
@@ -210,7 +210,7 @@ createdAt     Date
 ### Backend — `.env`
 ```env
 PORT=5000
-MONGO_URI=mongodb+srv://<user>:<password>@cluster.mongodb.net/algyn
+MONGO_URI=mongodb+srv://<user>:<password>@cluster.mongodb.net/stackraze
 JWT_SECRET=your_jwt_secret
 CLIENT_URL=http://localhost:5173
 ```
@@ -230,8 +230,8 @@ VITE_API_URL=http://localhost:5000
 
 ### 1. Clone the repo
 ```bash
-git clone https://github.com/your-username/algyn.git
-cd algyn
+git clone https://github.com/your-username/stackraze.git
+cd stackraze
 ```
 
 ### 2. Start the Backend
@@ -284,4 +284,4 @@ npm run dev       # Vite dev server -> http://localhost:5173
 
 ## License
 
-ISC © Algyñ Contributors
+ISC © Stackraze Contributors
