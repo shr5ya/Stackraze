@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import { API_URL } from "../config/api";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-
+import Logo2 from "../assets/logo2.png";
 import useAvatarUpload from "../hooks/useAvatarUpload";
 
 // Import avatars
