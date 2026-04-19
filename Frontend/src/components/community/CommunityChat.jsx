@@ -5,28 +5,48 @@ import { Send, Hash, ChevronLeft, MessageSquare, Users, CircleDot } from 'lucide
 import { resolveAvatar } from '../../utils/avatarHelper';
 
 const CommunityChat = ({ community, user, onBack }) => {
+
+  // Stores all messages (including pagination)
   const [messagesMap, setMessagesMap] = useState([]);
+
+  // Controlled input for message box
   const [newMessage, setNewMessage] = useState('');
+
+  // Socket connection instance
   const [socket, setSocket] = useState(null);
+
+   // Loading states (initial + pagination)
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
+
+  // Flag to know if more messages exist (for infinite scroll)
   const [hasMore, setHasMore] = useState(true);
   
+  // Refs for scroll handling
   const scrollContainerRef = useRef(null);
   const messagesEndRef = useRef(null);
+
+  // Used to control scroll behavior on first load vs pagination
   const isInitialLoad = useRef(true);
   const prevScrollHeight = useRef(0);
 
+  // Smooth scroll to bottom (used after sending/receiving messages)
   const scrollToBottom = useCallback((behavior = 'smooth') => {
     messagesEndRef.current?.scrollIntoView({ behavior });
   }, []);
 
+  // Fetch messages (initial load + pagination)
   const fetchMessages = useCallback(async (before = null) => {
+
+    //Decide which loading state to set based on whether we're fetching older messages (pagination) or initial load
     if (before) setLoadingMore(true);
     else setLoading(true);
 
     try {
+      
       const url = new URL(`${API_URL}/community/${community._id}/messages`);
+      
+      //Pagination: if 'before' timestamp is provided, fetch messages older than that timestamp
       if (before) url.searchParams.append('before', before);
       url.searchParams.append('limit', '20');
 
@@ -34,53 +54,74 @@ const CommunityChat = ({ community, user, onBack }) => {
       if (response.ok) {
         const newMessages = await response.json();
         
+         // If less than 20, no more messages left
         if (newMessages.length < 20) {
           setHasMore(false);
         }
 
         if (before) {
+
+          // Preserve scroll position after loading older messages by calculating the difference in scroll height before and after new messages are added, then adjusting scrollTop accordingly
           if (scrollContainerRef.current) {
             prevScrollHeight.current = scrollContainerRef.current.scrollHeight;
           }
           setMessagesMap((prev) => [...newMessages, ...prev]);
         } else {
-          setMessagesMap(newMessages);
+
+          // INTIAL LOAD: just set messages and scroll to bottom
+          setMessagesMap (newMessages);
           isInitialLoad.current = true;
         }
       }
-    } catch (error) {
+    } 
+    catch (error) {
       console.error('Failed to fetch messages:', error);
     } finally {
       setLoading(false);
       setLoadingMore(false);
     }
+
   }, [community?._id]);
 
+
+  // Socket setup (join room, receive messages)
   useEffect(() => {
     if (!community || !user) return;
 
+
+     // Reset state when switching communities
     setMessagesMap([]);
     setHasMore(true);
     isInitialLoad.current = true;
-    
+
     const newSocket = io(API_URL);
     setSocket(newSocket);
+
+    // Join community room
     newSocket.emit('join_community', community._id);
 
+    // Listen for incoming messages
     newSocket.on('receive_message', (message) => {
       setMessagesMap((prev) => [...prev, message]);
+
+      // Slight delay ensures DOM is updated before scroll
       setTimeout(() => scrollToBottom('smooth'), 50);
     });
 
     fetchMessages();
 
     return () => {
+
+      // Cleanup on unmount / switch
       newSocket.emit('leave_community', community._id);
       newSocket.disconnect();
     };
   }, [community?._id, user, fetchMessages, scrollToBottom]);
+    
 
+  // Infinite scroll (load older messages when reaching top)
   useEffect(() => {
+    
     const scrollContainer = scrollContainerRef.current;
     if (!scrollContainer) return;
 
