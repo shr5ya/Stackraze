@@ -5,6 +5,8 @@ import { useAuth } from "../context/AuthContext";
 import Logo2 from "../assets/logo2.png";
 import useAvatarUpload from "../hooks/useAvatarUpload";
 
+
+
 // Import avatars
 import {
   Avatar1,
@@ -14,6 +16,7 @@ import {
   Avatar5,
 } from "../assets/Avatars/index";
 import AuthPageHero from "@/components/AuthPages/AuthPageHero";
+
 
 const API_BASE = `${API_URL}/user`;
 
@@ -25,7 +28,11 @@ const avatars = [
   { name: "Avatar5", src: Avatar5 },
 ];
 
+
 export default function Signup() {
+
+  // ---------------- FORM STATE ----------------
+  // Stores all user input values
   const [form, setForm] = useState({
     name: "",
     username: "",
@@ -33,131 +40,197 @@ export default function Signup() {
     password: "",
     avatar: "Avatar1",
   });
-  const [errors, setErrors] = useState({});
-  const [message, setMessage] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
+
+  // -------------UI STATES---------------------
+  const [errors, setErrors] = useState({});                        // VALIDATION ERRORS
+  const [message, setMessage] = useState("");                     // GENERAL ERROR/SUCCESS MESSAGES
+  const [isLoading, setIsLoading] = useState(false);             // LOADING STATE
+  const [showPassword, setShowPassword] = useState(false);      // TOGGLE PASSWORD
+
+  //-----------------AVATAR STATES----------------
   const [customAvatarFile, setCustomAvatarFile] = useState(null);
   const [customAvatarPreview, setCustomAvatarPreview] = useState(null);
 
+  //----------------HOOKS-----------------------
   const { login } = useAuth();
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
   const { uploadAvatar } = useAvatarUpload();
 
+  //----------------VALIDATION FUNCTION------------------
   const validateForm = () => {
     const newErrors = {};
 
+    // Validate Name
     if (!form.name.trim()) {
       newErrors.name = "Full name is required";
     } else if (form.name.trim().length < 2) {
       newErrors.name = "Name must be at least 2 characters";
     }
 
+     // Validate Username
     if (!form.username.trim()) {
       newErrors.username = "Username is required";
     } else if (form.username.trim().length < 3) {
       newErrors.username = "Username must be at least 3 characters";
     } else if (!/^[a-zA-Z0-9_]+$/.test(form.username)) {
       newErrors.username =
-        "Username can only contain letters, numbers, and underscores";
+        "USER contains only letters, numbers, and underscores allowed";
     }
 
+
+    // Validate Email
     if (!form.email.trim()) {
       newErrors.email = "Email is required";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
       newErrors.email = "Please enter a valid email";
     }
 
+
+    // Validate Password
     if (!form.password) {
       newErrors.password = "Password is required";
     } else if (form.password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters";
+      newErrors.password = "Minimum 6 characters required";
     } else if (!/[a-z]/.test(form.password)) {
-      newErrors.password = "Password must contain at least one lowercase letter";
+      newErrors.password = "Add at least one lowercase letter";
     } else if (!/[A-Z]/.test(form.password)) {
-      newErrors.password = "Password must contain at least one uppercase letter";
+      newErrors.password = "Add at least one uppercase letter";
     } else if (!/[!@#$%^&*(),.?":{}|<>]/.test(form.password)) {
-      newErrors.password = "Password must contain at least one special character";
+      newErrors.password = "Add at least one special character";
     }
 
     setErrors(newErrors);
+
+    //return true if no errors, false otherwise
     return Object.keys(newErrors).length === 0;
   };
 
+    // ---------------- INPUT HANDLER ----------------
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+
+    // Update form state
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    // Remove error when user types
     if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }));
+      setErrors((prev) => ({
+        ...prev,
+        [name]: "",
+      }));
     }
   };
 
+
+  // ---------------- AVATAR SELECT ----------------
   const handleAvatarSelect = (avatarName) => {
-    setForm((prev) => ({ ...prev, avatar: avatarName }));
+    setForm((prev) => ({
+      ...prev,
+      avatar: avatarName,
+    }));
+
+    // Reset custom avatar if user selects default
     setCustomAvatarFile(null);
     setCustomAvatarPreview(null);
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setCustomAvatarFile(file);
-      setCustomAvatarPreview(URL.createObjectURL(file));
-      setForm((prev) => ({ ...prev, avatar: "custom" }));
+  
+  
+// ---------------- FILE INPUT HANDLER ----------------
+const handleFileChange = (e) => {
+  const file = e.target.files[0];
+
+  // If user selects a file
+  if (file) {
+    setCustomAvatarFile(file);
+
+    // Create preview URL for UI
+    setCustomAvatarPreview(URL.createObjectURL(file));
+
+    // Mark avatar as custom
+    setForm((prev) => ({
+      ...prev,
+      avatar: "custom",
+    }));
+  }
+};
+
+
+// ---------------- FORM SUBMIT ----------------
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  // Stop if validation fails
+  if (!validateForm()) return;
+
+  setIsLoading(true);
+  setMessage("");
+
+  try {
+    let finalAvatar = form.avatar;
+
+    // Upload avatar if custom image selected
+    if (form.avatar === "custom" && customAvatarFile) {
+      finalAvatar = await uploadAvatar(customAvatarFile);
     }
-  };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+    // Send signup request to backend
+    const res = await fetch(`${API_BASE}/signup`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
 
-    if (!validateForm()) return;
+      body: JSON.stringify({
+        name: form.name,
+        username: form.username,
+        email: form.email,
+        password: form.password,
+        avatar: finalAvatar,
+      }),
+    });
 
-    setIsLoading(true);
-    setMessage("");
+    const data = await res.json();
 
-    try {
-      let finalAvatar = form.avatar;
 
-      if (form.avatar === "custom" && customAvatarFile) {
-        finalAvatar = await uploadAvatar(customAvatarFile);
-      }
+     // Handle API error
+    if (!res.ok) {
+      throw new Error(data.message || "Signup failed");
+    }
 
-      const res = await fetch(`${API_BASE}/signup`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: form.name,
-          username: form.username,
-          email: form.email,
-          password: form.password,
-          avatar: finalAvatar,
-        }),
-      });
+    // If OTP verification required
+    if (data.requiresVerification) {
+      navigate(`/verify-otp?email=${encodeURIComponent(form.email)}`);
+      return;
+    }
 
-      const data = await res.json();
-
-      if (!res.ok) throw new Error(data.message || "Signup failed");
-
-      if (data.requiresVerification) {
-        navigate(`/verify-otp?email=${encodeURIComponent(form.email)}`);
-        return;
-      }
-
-      login({
+    // Login user after signup
+    login(
+      {
         ...data.user,
         email: form.email,
         name: form.name,
         username: form.username,
         avatar: finalAvatar,
-      }, data.token);
-      navigate("/");
-    } catch (err) {
-      setMessage(err.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+      },
+      data.token
+    );
+
+    // Redirect to homepage
+    navigate("/");
+
+  } catch (err) {
+    setMessage(err.message);
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+// -------GOOGLE SIGNUP-----------
 
   const handleGoogleSignup = () => {
     window.location.href = `${API_URL}/user/auth/google`;
