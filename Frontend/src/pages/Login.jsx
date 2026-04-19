@@ -4,28 +4,53 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import AuthPageHero from "@/components/AuthPages/AuthPageHero";
 
+// Base API endpoint
 const API_BASE = `${API_URL}/user`;
 
+
 export default function Login() {
-    const [form, setForm] = useState({
-        email: "",
-        password: "",
-    });
+
+
+    // ---------------- FORM STATE ----------------
+    const [form, setForm] = useState({email: "",password: "",});
+    //const [form, setForm] = useState({email: "",password: "",});
+    
+      // ---------------- UI STATES ----------------
     const [errors, setErrors] = useState({});
     const [message, setMessage] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    // const [errors, setErrors] = useState({});
+    // const [message, setMessage] = useState("");
+    // const [isLoading, setIsLoading] = useState(false);
+    // const [showPassword, setShowPassword] = useState(false);
+
+
+    //---------------HOOKS----------------//
     const [searchParams] = useSearchParams();
     const { login } = useAuth();
     const navigate = useNavigate();
 
+    // ---------------- HANDLE GOOGLE ERROR ----------------
     useEffect(() => {
         const error = searchParams.get("error");
         if (error) {
-            setMessage(error === "auth_failed" ? "Google authentication failed. Please try again." : "An error occurred. Please try again.");
-        }
-    }, [searchParams]);
+            setMessage(
 
+                error === "auth_failed"?"Google authentication failed. Please try again.": "An error occurred. Please try again."
+            );
+        }
+  }, [searchParams]);
+
+    // useEffect(() => {
+    //     const error = searchParams.get("error");
+    //     if (error) {
+    //         setMessage(error === "auth_failed" ? "Google authentication failed. Please try again." : "An error occurred. Please try again.");
+    //     }
+    // }, [searchParams]);
+
+
+    // FROM VALIDATION FUNCTION
     const validateForm = () => {
         const newErrors = {};
         if (!form.email.trim()) {
@@ -109,9 +134,13 @@ export default function Login() {
 
                     {/* Form */}
                     <form onSubmit={handleSubmit} className="space-y-5">
+                        
+                        {/*-----------------EMAIL FIELD--------------*/}
                         <div className="space-y-2">
                             <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
                             <div className="relative">
+
+                                {/*----------ICON-----------*/}
                                 <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -128,6 +157,7 @@ export default function Login() {
                             </div>
                         </div>
 
+                         {/* ---------------- PASSWORD FIELD ---------------- */}
                         <div className="space-y-2">
                             <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
                             <div className="relative">
@@ -144,6 +174,8 @@ export default function Login() {
                                     onChange={handleChange}
                                     className={`w-full pl-10 pr-12 py-3 rounded-xl border ${errors.password ? "border-red-500" : "border-gray-200 dark:border-zinc-700"} bg-gray-50 dark:bg-zinc-800/50 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all`}
                                 />
+
+                                {/*-----------------SHOW/HIDE PASSWORD TOGGLE-----------------*/}
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
@@ -158,7 +190,8 @@ export default function Login() {
                             </div>
                         </div>
 
-                        <button
+                        {/* ---------------- SUBMIT BUTTON ---------------- */}
+                       <button
                             type="submit"
                             disabled={isLoading}
                             className="w-full py-3.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-lg transition-all flex items-center justify-center gap-2"
@@ -166,6 +199,8 @@ export default function Login() {
                             {isLoading ? "Signing in..." : "Sign In"}
                         </button>
 
+
+                        {/* ---------------- DIVIDER ---------------- */}
                         <div className="relative my-6">
                             <div className="absolute inset-0 flex items-center">
                                 <div className="w-full border-t border-gray-200 dark:border-zinc-700"></div>
@@ -174,6 +209,9 @@ export default function Login() {
                                 <span className="px-4 bg-white dark:bg-zinc-950 text-gray-400">or</span>
                             </div>
                         </div>
+
+
+                        {/* ---------------- GOOGLE LOGIN ---------------- */}
 
                         <button
                             type="button"
@@ -190,6 +228,8 @@ export default function Login() {
                         </button>
                     </form>
 
+
+                    {/* ---------------- SIGNUP LINK ---------------- */}
                     <p className="mt-8 text-center text-sm text-gray-500 dark:text-gray-400">
                         Don't have an account?{" "}
                         <Link to="/signup" className="text-blue-600 dark:text-blue-400 font-medium hover:underline">
