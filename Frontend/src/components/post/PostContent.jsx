@@ -5,13 +5,19 @@ const PostContent = ({ content, maxLength = 180 }) => {
 
   if (!content) return null;
 
+
+  // Determine if content needs truncation
   const isLong = content.length > maxLength;
+
   const displayText = expanded || !isLong
     ? content
     : content.slice(0, maxLength) + "...";
 
+  
+   //// Convert URLs into clickable links inside text
   const linkifyText = (text) => {
-    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const urlRegex = /(https?:\/\/[^\s]+)/g;  
+
 
     return text.split(urlRegex).map((part, index) => {
       if (part.match(urlRegex)) {

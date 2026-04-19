@@ -20,6 +20,8 @@ function EditProfileModal({ isOpen, onClose, inline = false }) {
     about: user?.about || "",
   });
 
+
+  // KEEP AVATAR STATE SEPERATE FOR UPLOAD + PREVIEW HANDLING
   const [avatarUrl, setAvatarUrl] = useState(user?.avatar || "");
   const [previewAvatar, setPreviewAvatar] = useState(
     resolveAvatar(user?.avatar),
@@ -28,7 +30,7 @@ function EditProfileModal({ isOpen, onClose, inline = false }) {
 
   const fileInputRef = useRef(null);
 
-  // Reset the modal state every time it opens to reflect the latest user data
+  // Reset the modal state every time it opens to reflect the latest user data(SYNC WITH LATEST USER DATA)
   useEffect(() => {
     if (isOpen || inline) {
       setFormData({
@@ -49,15 +51,17 @@ function EditProfileModal({ isOpen, onClose, inline = false }) {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+    // Trigger hidden file input for avatar upload
   const handleImageClick = () => {
     fileInputRef.current?.click();
   };
+
 
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    // Show local preview immediately
+    //Show instant preview before upload completes
     const localUrl = URL.createObjectURL(file);
     setPreviewAvatar(localUrl);
 
@@ -68,7 +72,7 @@ function EditProfileModal({ isOpen, onClose, inline = false }) {
     } catch (err) {
       console.error("Avatar upload failed:", err);
       showPopup(err.message || "Failed to upload profile photo", "error");
-      // Revert preview on failure
+      // Revert preview IF UPLOAD FAILS
       setPreviewAvatar(resolveAvatar(user?.avatar));
     }
   };

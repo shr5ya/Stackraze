@@ -13,6 +13,7 @@ import SavePost from "./savepost";
 function Post({ post, initialSaved }) {
     const { user, token } = useAuth();
     const [liked, setLiked] = useState(false);
+
     // const [saved, setSaved] = useState(false);
     const [likesCount, setLikesCount] = useState(post?.likes?.length || 0);
     const [commentsOpen, setCommentsOpen] = useState(false);
@@ -20,8 +21,9 @@ function Post({ post, initialSaved }) {
     const [imageError, setImageError] = useState(false);
     const [currentUserAvatar, setCurrentUserAvatar] = useState(null);
 
-    // Initialize liked state based on user and post.likes
-    useEffect(() => {
+
+     // Sync "liked" state based on current user + post data
+    useEffect (() => {
         if (user && post?.likes) {
             // Handle user ID if it has $oid structure
             const userId = user._id?.$oid || user._id || user.id;
@@ -34,14 +36,14 @@ function Post({ post, initialSaved }) {
         }
     }, [user, post?.likes]);
 
-    // Load current user avatar from localStorage
-    useEffect(() => {
+
+    // Load current user avatar from local storage (fallback source)
+    useEffect (() => {
         const storedUser = localStorage.getItem('user');
         if (storedUser) {
             try {
                 const userData = JSON.parse(storedUser);
-                const avatar = resolveAvatar(userData.avatar);
-                setCurrentUserAvatar(avatar);
+                setCurrentUserAvatar(resolveAvatar(userData.avatar));
             } catch (error) {
                 console.error('Error parsing user data:', error);
             }
@@ -81,6 +83,8 @@ function Post({ post, initialSaved }) {
             .slice(0, 2);
     };
 
+
+    // Optimistic UI update for likes (feels instant, rolls back on failure)
     const handleLike = async () => {
         if (!user) {
             // Optional: Prompt login
@@ -123,7 +127,7 @@ function Post({ post, initialSaved }) {
     };
 
 
-    // Format numbers (1000 -> 1k)
+    // Format large numbers (example : 1200 -> 1.2k)
     const formatNumber = (num) => {
         if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
         if (num >= 1000) return (num / 1000).toFixed(1) + 'k';

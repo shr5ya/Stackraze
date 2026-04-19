@@ -6,11 +6,12 @@ export default function PostImageCarousel({ photos = [] }) {
   const [isOpen, setIsOpen] = useState(false);
   const touchStartX = useRef(null);
 
-  // Swipe handlers
+  // Track swipe start for mobile navigation
   const handleTouchStart = (e) => {
     touchStartX.current = e.touches[0].clientX;
   };
 
+    // Detect swipe direction (left/right) to change images
   const handleTouchEnd = (e) => {
     if (!touchStartX.current) return;
 
@@ -28,21 +29,18 @@ export default function PostImageCarousel({ photos = [] }) {
     touchStartX.current = null;
   };
 
-  // Close on ESC
+
+   // Enable keyboard controls (ESC to close, arrows to navigate)
   useEffect(() => {
     const handleKey = (e) => {
       if (!isOpen) return; // only work when popup is open
 
-      if (e.key === "Escape") {
-        setIsOpen(false);
-      }
-
+      if (e.key === "Escape") setIsOpen(false);
       if (e.key === "ArrowRight") {
         setCurrentImageIndex((prev) =>
-          prev < photos.length - 1 ? prev + 1 : prev,
+          prev < photos.length - 1 ? prev + 1 : prev
         );
       }
-
       if (e.key === "ArrowLeft") {
         setCurrentImageIndex((prev) => (prev > 0 ? prev - 1 : prev));
       }
@@ -56,7 +54,8 @@ export default function PostImageCarousel({ photos = [] }) {
 
   return (
     <>
-      {/* ===== Normal Carousel ===== */}
+
+      {/* Main carousel with swipe + click-to-open fullscreen */}
       <div
         className="relative group"
         onTouchStart={handleTouchStart}
