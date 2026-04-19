@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import { API_URL } from "../config/api";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import Logo2 from "../assets/logo2.png";
+
 import useAvatarUpload from "../hooks/useAvatarUpload";
 
 // Import avatars
@@ -139,13 +139,11 @@ export default function Signup() {
 
       if (!res.ok) throw new Error(data.message || "Signup failed");
 
-      // If email verification is required, redirect to OTP page
       if (data.requiresVerification) {
         navigate(`/verify-otp?email=${encodeURIComponent(form.email)}`);
         return;
       }
 
-      // Otherwise login directly (shouldn't happen with OTP flow, but as fallback)
       login({
         ...data.user,
         email: form.email,
@@ -178,35 +176,13 @@ export default function Signup() {
         {/* Right Panel - Form */}
         <div className="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-16">
           <div className="w-full max-w-md">
-            {/* Header */}
-            <div className="flex items-center justify-between mb-8">
-              <Link to="/">
-                <div className="flex gap-4 items-center">
-                  <div className="pl-10 flex items-center gap-2">
-                    <img src={Logo2} className="h-25 dark:invert" alt="logo" />
-                    {/* <p className="text-2xl font-semibold text-black dark:text-white">
-                    Algyñ
-                  </p> */}
-                  </div>
-                </div>
-              </Link>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Already have an account?{" "}
-                <Link
-                  to="/login"
-                  className="text-blue-600 dark:text-blue-400 font-medium hover:underline"
-                >
-                  Sign in
-                </Link>
-              </p>
-            </div>
-
-            {/* Title */}
+            
+            {/* Title Section */}
             <div className="mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
                 Sign up
               </h2>
-              <p className="text-gray-500 dark:text-gray-400">
+              <p className="text-gray-500 dark:text-gray-400 mt-1">
                 Create your account to get started
               </p>
             </div>
@@ -228,7 +204,6 @@ export default function Signup() {
                   Choose your avatar
                 </label>
                 <div className="flex items-center gap-4">
-                  {/* Selected Avatar Preview */}
                   <div className="w-16 h-16 rounded-full ring-4 ring-blue-500 overflow-hidden flex-shrink-0">
                     <img
                       src={selectedAvatarSrc}
@@ -236,7 +211,6 @@ export default function Signup() {
                       className="w-full h-full object-cover"
                     />
                   </div>
-                  {/* Avatar Options */}
                   <div className="flex gap-2 flex-wrap">
                     {avatars.map((avatar) => (
                       <button
@@ -279,22 +253,10 @@ export default function Signup() {
 
               {/* Name Field */}
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Full Name
-                </label>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Full Name</label>
                 <div className="relative">
-                  <svg
-                    className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                    />
+                  <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
                   <input
                     type="text"
@@ -302,35 +264,18 @@ export default function Signup() {
                     placeholder="Name"
                     value={form.name}
                     onChange={handleChange}
-                    className={`w-full pl-10 pr-4 py-3 rounded-xl border ${errors.name
-                      ? "border-red-500"
-                      : "border-gray-200 dark:border-zinc-700"
-                      } bg-gray-50 dark:bg-zinc-800/50 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}
+                    className={`w-full pl-10 pr-4 py-3 rounded-xl border ${errors.name ? "border-red-500" : "border-gray-200 dark:border-zinc-700"} bg-gray-50 dark:bg-zinc-800/50 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}
                   />
                 </div>
-                {errors.name && (
-                  <p className="text-xs text-red-500">{errors.name}</p>
-                )}
+                {errors.name && <p className="text-xs text-red-500">{errors.name}</p>}
               </div>
 
               {/* Username Field */}
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Username
-                </label>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Username</label>
                 <div className="relative">
-                  <svg
-                    className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
+                  <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                   <input
                     type="text"
@@ -338,35 +283,18 @@ export default function Signup() {
                     placeholder="Username"
                     value={form.username}
                     onChange={handleChange}
-                    className={`w-full pl-10 pr-4 py-3 rounded-xl border ${errors.username
-                      ? "border-red-500"
-                      : "border-gray-200 dark:border-zinc-700"
-                      } bg-gray-50 dark:bg-zinc-800/50 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}
+                    className={`w-full pl-10 pr-4 py-3 rounded-xl border ${errors.username ? "border-red-500" : "border-gray-200 dark:border-zinc-700"} bg-gray-50 dark:bg-zinc-800/50 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}
                   />
                 </div>
-                {errors.username && (
-                  <p className="text-xs text-red-500">{errors.username}</p>
-                )}
+                {errors.username && <p className="text-xs text-red-500">{errors.username}</p>}
               </div>
 
               {/* Email Field */}
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Email
-                </label>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
                 <div className="relative">
-                  <svg
-                    className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                    />
+                  <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                   </svg>
                   <input
                     type="email"
@@ -374,35 +302,18 @@ export default function Signup() {
                     placeholder="you@example.com"
                     value={form.email}
                     onChange={handleChange}
-                    className={`w-full pl-10 pr-4 py-3 rounded-xl border ${errors.email
-                      ? "border-red-500"
-                      : "border-gray-200 dark:border-zinc-700"
-                      } bg-gray-50 dark:bg-zinc-800/50 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}
+                    className={`w-full pl-10 pr-4 py-3 rounded-xl border ${errors.email ? "border-red-500" : "border-gray-200 dark:border-zinc-700"} bg-gray-50 dark:bg-zinc-800/50 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}
                   />
                 </div>
-                {errors.email && (
-                  <p className="text-xs text-red-500">{errors.email}</p>
-                )}
+                {errors.email && <p className="text-xs text-red-500">{errors.email}</p>}
               </div>
 
               {/* Password Field */}
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Password
-                </label>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
                 <div className="relative">
-                  <svg
-                    className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                    />
+                  <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                   </svg>
                   <input
                     type={showPassword ? "text" : "password"}
@@ -410,10 +321,7 @@ export default function Signup() {
                     placeholder="••••••••"
                     value={form.password}
                     onChange={handleChange}
-                    className={`w-full pl-10 pr-12 py-3 rounded-xl border ${errors.password
-                      ? "border-red-500"
-                      : "border-gray-200 dark:border-zinc-700"
-                      } bg-gray-50 dark:bg-zinc-800/50 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}
+                    className={`w-full pl-10 pr-12 py-3 rounded-xl border ${errors.password ? "border-red-500" : "border-gray-200 dark:border-zinc-700"} bg-gray-50 dark:bg-zinc-800/50 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}
                   />
                   <button
                     type="button"
@@ -421,38 +329,12 @@ export default function Signup() {
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                   >
                     {showPassword ? (
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-                      </svg>
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268-2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" /></svg>
                     ) : (
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                      </svg>
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
                     )}
                   </button>
                 </div>
-                {/* Password Requirements - inline, only show when typing */}
-                {form.password && (
-                  <div className="mt-2 flex items-center gap-3 text-xs">
-                    <span className={`flex items-center gap-1 ${form.password.length >= 6 ? 'text-green-500' : 'text-gray-400'}`}>
-                      <span className={`w-1.5 h-1.5 rounded-full ${form.password.length >= 6 ? 'bg-green-500' : 'bg-gray-300'}`}></span>
-                      6+
-                    </span>
-                    <span className={`flex items-center gap-1 ${/[a-z]/.test(form.password) ? 'text-green-500' : 'text-gray-400'}`}>
-                      <span className={`w-1.5 h-1.5 rounded-full ${/[a-z]/.test(form.password) ? 'bg-green-500' : 'bg-gray-300'}`}></span>
-                      a-z
-                    </span>
-                    <span className={`flex items-center gap-1 ${/[A-Z]/.test(form.password) ? 'text-green-500' : 'text-gray-400'}`}>
-                      <span className={`w-1.5 h-1.5 rounded-full ${/[A-Z]/.test(form.password) ? 'bg-green-500' : 'bg-gray-300'}`}></span>
-                      A-Z
-                    </span>
-                    <span className={`flex items-center gap-1 ${/[!@#$%^&*(),.?":{}|<>]/.test(form.password) ? 'text-green-500' : 'text-gray-400'}`}>
-                      <span className={`w-1.5 h-1.5 rounded-full ${/[!@#$%^&*(),.?":{}|<>]/.test(form.password) ? 'bg-green-500' : 'bg-gray-300'}`}></span>
-                      !@#
-                    </span>
-                  </div>
-                )}
               </div>
 
               {/* Submit Button */}
@@ -461,29 +343,7 @@ export default function Signup() {
                 disabled={isLoading}
                 className="w-full py-3.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2"
               >
-                {isLoading ? (
-                  <>
-                    <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                        fill="none"
-                      />
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      />
-                    </svg>
-                    Creating account...
-                  </>
-                ) : (
-                  "Create Account"
-                )}
+                {isLoading ? "Creating account..." : "Create Account"}
               </button>
 
               {/* Divider */}
@@ -512,8 +372,8 @@ export default function Signup() {
               </button>
             </form>
 
-            {/* Mobile Sign In Link */}
-            <p className="mt-8 text-center text-sm text-gray-500 dark:text-gray-400 lg:hidden">
+            {/* Global Sign In Link */}
+            <p className="mt-8 text-center text-sm text-gray-500 dark:text-gray-400">
               Already have an account?{" "}
               <Link
                 to="/login"
