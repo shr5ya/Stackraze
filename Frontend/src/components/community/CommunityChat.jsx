@@ -138,36 +138,57 @@ const CommunityChat = ({ community, user, onBack }) => {
     return () => scrollContainer.removeEventListener('scroll', handleScroll);
   }, [hasMore, loadingMore, loading, messagesMap, fetchMessages]);
 
+
+  // ---------------- PRESERVE SCROLL POSITION ----------------
   useEffect(() => {
-    if (loadingMore === false && prevScrollHeight.current > 0 && scrollContainerRef.current) {
-      const scrollContainer = scrollContainerRef.current;
-      const newScrollHeight = scrollContainer.scrollHeight;
-      const heightDifference = newScrollHeight - prevScrollHeight.current;
-      scrollContainer.scrollTop = heightDifference;
+    if (
+      loadingMore === false &&
+      prevScrollHeight.current > 0 &&
+      scrollContainerRef.current
+    ) {
+      const container = scrollContainerRef.current;
+
+      const newHeight = container.scrollHeight;
+      const diff = newHeight - prevScrollHeight.current;
+
+      container.scrollTop = diff;
+
       prevScrollHeight.current = 0;
     }
   }, [loadingMore]);
 
+
+
+
+
+  // ---------------- INITIAL SCROLL TO BOTTOM ----------------
   useEffect(() => {
     if (isInitialLoad.current && messagesMap.length > 0) {
-      scrollToBottom('auto');
+      scrollToBottom("auto");
       isInitialLoad.current = false;
     }
   }, [messagesMap, scrollToBottom]);
+  
 
+
+  // ---------------- SEND MESSAGE ----------------
   const handleSendMessage = (e) => {
     e.preventDefault();
+    
     if (!newMessage.trim() || !socket || !community || !user) return;
-
+    
     const messageData = {
       communityId: community._id,
       senderId: user._id || user.id,
       text: newMessage.trim(),
     };
-
-    socket.emit('send_message', messageData);
-    setNewMessage('');
+    
+    socket.emit("send_message", messageData);
+    
+    setNewMessage("");
   };
+
+  
 
   if (!community) {
     return (
@@ -178,28 +199,69 @@ const CommunityChat = ({ community, user, onBack }) => {
     );
   }
 
+
+
+  // ---------------- GROUP MESSAGES BY DATE ----------------
   const groupMessagesByDate = (messages) => {
     const groups = [];
-    let currentDate = '';
+    let currentDate = "";
     
     messages.forEach((msg) => {
       if (!msg.createdAt) return;
-      const dateObj = new Date(msg.createdAt);
-      const date = dateObj.toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric'
-      }).toUpperCase();
       
-      if (date !== currentDate) {
-        currentDate = date;
-        groups.push({ type: 'date', date, _id: `date-${date}` });
-      }
-      groups.push({ type: 'message', ...msg });
+      const dateObj = new Date(msg.createdAt);
+      
+      const formattedDate = dateObj
+      .toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      })
+      .toUpperCase();
+
+    // Insert date separator
+    if (formattedDate !== currentDate) {
+      currentDate = formattedDate;
+
+      groups.push({
+        type: "date",
+        date: formattedDate,
+        _id: `date-${formattedDate}`,
+      });
+    }
+
+    // Insert message
+    groups.push({
+      type: "message",
+      ...msg,
     });
+  });
+
+  return groups;
+};
+
+  // const groupMessagesByDate = (messages) => {
+  //   const groups = [];
+  //   let currentDate = '';
     
-    return groups;
-  };
+  //   messages.forEach((msg) => {
+  //     if (!msg.createdAt) return;
+  //     const dateObj = new Date(msg.createdAt);
+  //     const date = dateObj.toLocaleDateString('en-US', {
+  //       month: 'short',
+  //       day: 'numeric',
+  //       year: 'numeric'
+  //     }).toUpperCase();
+      
+  //     if (date !== currentDate) {
+  //       currentDate = date;
+  //       groups.push({ type: 'date', date, _id: `date-${date}` });
+  //     }
+  //     groups.push({ type: 'message', ...msg });
+  //   });
+    
+  //   return groups;
+  // };
 
   const displayItems = groupMessagesByDate(messagesMap);
 
