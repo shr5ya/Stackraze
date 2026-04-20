@@ -1,9 +1,14 @@
 import React from 'react';
 import { Hash, Users, Sparkles } from 'lucide-react';
 
+
+// ---------------- COMMUNITY SIDEBAR COMPONENT ----------------
+// Displays list of communities with selection + UI states
 const CommunitySidebar = ({ communities, selectedCommunity, onSelectCommunity }) => {
   return (
     <div className="w-full h-full bg-transparent flex flex-col">
+
+
       {/* Header */}
       <div className="px-5 py-4 border-b border-zinc-200/60 dark:border-zinc-800/50">
         <div className="flex items-center justify-between">
@@ -32,6 +37,8 @@ const CommunitySidebar = ({ communities, selectedCommunity, onSelectCommunity })
             <p className="text-xs text-zinc-400 dark:text-zinc-600 mt-1">Communities will appear here</p>
           </div>
         ) : (
+
+          // Map through communities and render each one with selection state
           communities.map((community) => {
             const isSelected = selectedCommunity?._id === community._id;
             return (
@@ -52,7 +59,7 @@ const CommunitySidebar = ({ communities, selectedCommunity, onSelectCommunity })
                   `}
                 />
 
-                {/* Channel icon */}
+                {/* --------------------Channel icon----------------------- */}
                 <div
                   className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300
                     ${isSelected
@@ -64,7 +71,7 @@ const CommunitySidebar = ({ communities, selectedCommunity, onSelectCommunity })
                   <Hash size={14} strokeWidth={2.5} />
                 </div>
 
-                {/* Channel name */}
+                {/* ----------------------Community Name + Description------------------------------ */}
                 <div className="flex flex-col flex-1 overflow-hidden min-w-0">
                   <span
                     className={`font-semibold text-[13px] truncate transition-all duration-300
