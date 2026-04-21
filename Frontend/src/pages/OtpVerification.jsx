@@ -3,7 +3,6 @@ import { API_URL } from "../config/api";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import AuthPageHero from "@/components/AuthPages/AuthPageHero";
-import Logo2 from "../assets/logo2.png";
 
 const API_BASE = `${API_URL}/user`;
 
@@ -156,16 +155,6 @@ export default function OtpVerification() {
         {/* Right Panel */}
         <div className="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-16">
           <div className="w-full max-w-md">
-            {/* Header */}
-            <div className="flex items-center justify-between mb-8">
-              <Link to="/">
-                <div className="flex gap-4 items-center">
-                  <div className="pl-10 flex items-center gap-2">
-                    <img src={Logo2} className="h-25 dark:invert" alt="logo" />
-                  </div>
-                </div>
-              </Link>
-            </div>
 
             {/* Title */}
             <div className="mb-8">
