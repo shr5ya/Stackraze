@@ -37,7 +37,7 @@ async function sendOtpEmail(email, otp, name = "there") {
           Hey ${name} 👋
         </p>
         <p style="color: #374151; font-size: 16px; line-height: 1.6;">
-          Welcome to Algyñ! Use the code below to verify your email address:
+          Welcome to Stackraze! Use the code below to verify your email address:
         </p>
         
         <div style="text-align: center; margin: 32px 0;">
