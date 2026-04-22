@@ -36,6 +36,8 @@ function Location() {
       }
     } catch (error) {
       console.error("Error fetching location:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -57,7 +59,7 @@ function Location() {
       
       <div className="relative h-80 w-full rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-sm bg-white dark:bg-zinc-950">
         {userCoordinates ? (
-          <Map center={[userCoordinates[1], userCoordinates[0]]} zoom={14}>
+          <Map center={[userCoordinates[1], userCoordinates[0]]} zoom={16}>
             <MapControls position="bottom-right" showZoom />
 
             <MapMarker longitude={userCoordinates[1]} latitude={userCoordinates[0]}>
@@ -90,8 +92,8 @@ function Location() {
 
                     {/* Coordinates Meta */}
                     <div className="flex justify-between items-center text-[10px] font-mono text-zinc-400">
-                      <span>{userCoordinates[0].toFixed(4)}° N</span>
-                      <span>{userCoordinates[1].toFixed(4)}° E</span>
+                      <span>{userCoordinates[0].toFixed(6)}° N</span>
+                      <span>{userCoordinates[1].toFixed(6)}° E</span>
                     </div>
                   </div>
                 </div>

@@ -23,9 +23,9 @@ function generateOtp() {
  */
 async function sendOtpEmail(email, otp, name = "there") {
   const mailOptions = {
-    from: `"Algyñ" <${process.env.EMAIL_USER}>`,
+    from: `"Stackraze" <${process.env.EMAIL_USER}>`,
     to: email,
-    subject: "Verify your Algyñ account",
+    subject: "Verify your Stackraze account",
     html: `
       <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 480px; margin: 0 auto; padding: 40px 24px; background: #ffffff;">
         <div style="text-align: center; margin-bottom: 32px;">
@@ -53,7 +53,7 @@ async function sendOtpEmail(email, otp, name = "there") {
         <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 32px 0;" />
         
         <p style="color: #9ca3af; font-size: 12px; text-align: center;">
-          If you didn't create an account on Algyñ, you can safely ignore this email.
+          If you didn't create an account on Stackraze, you can safely ignore this email.
         </p>
       </div>
     `,
