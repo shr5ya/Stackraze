@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { API_URL } from "../config/api";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -7,6 +8,22 @@ import UploadPost from "@/components/post/UploadPost";
 import Post from "@/components/post/Post";
 import PostSkeleton from "@/components/post/PostSkeleton";
 import { usePopup } from "@/context/PopupContext";
+
+const postVariants = {
+  hidden: { opacity: 0, y: 30, scale: 0.98 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { duration: 0.5, ease: [0.25, 0.1, 0.25, 1] },
+  },
+  exit: {
+    opacity: 0,
+    y: -20,
+    scale: 0.98,
+    transition: { duration: 0.3 },
+  },
+};
 
 const Home = () => {
   const [posts, setPosts] = useState([]);
@@ -136,38 +153,81 @@ const Home = () => {
       <main className="min-h-screen pt-12 lg:pt-20 pb-20 px-">
         <div className="w-full max-w-xl mx-auto flex flex-col gap-2 lg:gap-6">
           {/* Create Post */}
-          <UploadPost onSubmit={handleNewPost} />
+          <motion.div
+            initial={{ opacity: 0, y: -15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+          >
+            <UploadPost onSubmit={handleNewPost} />
+          </motion.div>
 
           {/* Posts Feed */}
-          {posts.map((post) => (
-            <Post key={post._id} post={post} />
-          ))}
+          <AnimatePresence mode="popLayout">
+            {posts.map((post, i) => (
+              <motion.div
+                key={post._id}
+                variants={postVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                layout
+                transition={{ duration: 0.5, delay: initialLoad ? Math.min(i * 0.08, 0.4) : 0 }}
+              >
+                <Post post={post} />
+              </motion.div>
+            ))}
+          </AnimatePresence>
 
           {/* Infinite scroll loader */}
           <div
             ref={loaderRef}
             className="flex items-center justify-center w-full py-4"
           >
-            {loading && <PostSkeleton />}
+            <AnimatePresence>
+              {loading && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <PostSkeleton />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* End of Feed */}
-          {!hasMore && posts.length > 0 && (
-            <div className="text-center py-4 text-neutral-500 text-sm">
-              No more posts to show.
-            </div>
-          )}
+          <AnimatePresence>
+            {!hasMore && posts.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.2 }}
+                className="text-center py-4 text-neutral-500 text-sm"
+              >
+                No more posts to show.
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Empty State */}
-          {!loading && posts.length === 0 && !initialLoad && (
-            <div className="text-center py-8 text-neutral-500">
-              No posts yet. Be the first to share something!
-            </div>
-          )}
+          <AnimatePresence>
+            {!loading && posts.length === 0 && !initialLoad && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+                className="text-center py-8 text-neutral-500"
+              >
+                No posts yet. Be the first to share something!
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </main>
     </div>
   );
 };
 
-export default Home;
+export default Home;

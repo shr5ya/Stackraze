@@ -1,7 +1,8 @@
-import React, {useEffect} from "react";
+import React, { useEffect, useRef } from "react";
+import { motion, useInView } from "framer-motion";
 import Navbar from "../components/header/navbar";
 import { GridSmallBackground } from "../components/ui/grid-small-background";
-import Hero  from "../components/about/Hero";
+import Hero from "../components/about/Hero";
 import Section2 from "@/components/about/Section2";
 import LogoMarquee from "@/components/about/Section3";
 import ContactForm from "@/components/ContactForm";
@@ -10,15 +11,36 @@ import Contact from "@/components/contact";
 import Footer from "@/components/Footer";
 import People from "@/components/about/People";
 import CheckboxGrid from "@/components/CheckBoxes";
-import GetGrids from "@/components/GetGrids"
+import GetGrids from "@/components/GetGrids";
+
+// Reusable animated wrapper — fades in + slides up on scroll
+function AnimatedSection({ children, delay = 0, className = "" }) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-60px" });
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 40 }}
+      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+      transition={{
+        duration: 0.7,
+        delay,
+        ease: [0.25, 0.1, 0.25, 1],
+      }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
 
 const About = () => {
-
   //scroll to top
   useEffect(() => {
-      // window.scrollTo({ top: 0, behavior: "smooth" });
-      window.scrollTo(0, 0); //hard scroll
-    }, []);
+    // window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo(0, 0); //hard scroll
+  }, []);
 
   const faqs = [
     {
@@ -55,24 +77,41 @@ const About = () => {
   return (
     <>
       <GridSmallBackground>
-        <div className="flex justify-center items-center mt-50">
-          <Hero/>
-        </div>
-          <div className="flex mb-50">
-          <LogoMarquee/>
+        <AnimatedSection delay={0}>
+          <div className="flex justify-center items-center mt-50">
+            <Hero />
           </div>
-          <People/>
-          <Section2/>
-          <FAQSection faqs={faqs}/>
-          <Contact/>
-          {/* <CheckboxGrid/> */}
-          {/* <GetGrids/> */}
-          {/* <ContactForm/> */}
+        </AnimatedSection>
+
+        <AnimatedSection delay={0.1}>
+          <div className="flex mb-50">
+            <LogoMarquee />
+          </div>
+        </AnimatedSection>
+
+        <AnimatedSection delay={0.1}>
+          <People />
+        </AnimatedSection>
+
+        <AnimatedSection delay={0.15}>
+          <Section2 />
+        </AnimatedSection>
+
+        <AnimatedSection delay={0.1}>
+          <FAQSection faqs={faqs} />
+        </AnimatedSection>
+
+        <AnimatedSection delay={0.1}>
+          <Contact />
+        </AnimatedSection>
+
+        {/* <CheckboxGrid/> */}
+        {/* <GetGrids/> */}
+        {/* <ContactForm/> */}
       </GridSmallBackground>
-      <Footer/>
+      <Footer />
     </>
   );
 };
 
 export default About;
-
