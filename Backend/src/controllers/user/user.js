@@ -332,7 +332,7 @@ async function handleUpdateUserData(req, res) {
     const userId = req.user.id;
     const updateFields = req.body || {};
 
-    const allowedFields = ["name", "username", "email", "avatar", "about", "location", "password"];
+    const allowedFields = ["name", "username", "email", "avatar", "coverPhoto", "about", "location", "password"];
     const updates = {};
 
     for (const key of allowedFields) {
@@ -418,7 +418,7 @@ async function handleGetProfileByUsername(req, res) {
 
     const user = await User.findOne(
       { username: normalized },
-      "name username about avatar"
+      "name username about avatar coverPhoto"
     ).lean();
 
     if (!user) {

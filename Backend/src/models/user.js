@@ -54,6 +54,11 @@ const userSchema = new mongoose.Schema(
       default:"",
     },
 
+    coverPhoto: {
+      type: String,
+      default: "",
+    },
+
     posts: [
       {
         type: mongoose.Schema.Types.ObjectId,
