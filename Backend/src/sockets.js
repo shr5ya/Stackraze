@@ -1,17 +1,22 @@
+
+// Import Mongoose models
 const Message = require("./models/message");
 const Community = require("./models/community");
 
 // Initialize all socket event handlers
 function initializeSockets(io) {
+
+  // Listen for new client connections
   io.on("connection", (socket) => {
     console.log("A user connected:", socket.id);
 
     // Join a specific community room
     socket.on("join_community", (communityId) => {
-      socket.join(communityId);
+      socket.join(communityId);  // Add user to a room identified by communityId
       console.log(`User ${socket.id} joined community ${communityId}`);
     });
 
+     // Leave a specific community room
     socket.on("leave_community", (communityId) => {
       socket.leave(communityId);
       console.log(`User ${socket.id} left community ${communityId}`);
@@ -39,11 +44,13 @@ function initializeSockets(io) {
         console.error("Error sending message via socket:", error);
       }
     });
-
+   
+   // Handle user disconnection
     socket.on("disconnect", () => {
       console.log("User disconnected:", socket.id);
     });
   });
 }
 
+// Export the function to be used in server setup
 module.exports = initializeSockets;
