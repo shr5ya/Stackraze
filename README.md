@@ -1,6 +1,26 @@
 # Stackraze
 
-**Stackraze** is a full-stack community social platform where people can share posts, connect with nearby users, bookmark content, comment, read newsletters, engage in communities, and build a profile — all in one place.
+## Team Details
+
+| Name | Roll Number |
+|------|------------|
+| Shreya Yadav | 2210990841 |
+| Palak Bisht | 2210990631 |
+| Tanisha Singla | 2210990893 |
+
+---
+
+## Project Type
+Copyright
+
+
+
+## Current Status
+Waiting
+
+
+**Stackraze**  is a full-stack community-driven social platform that enables users to connect, interact, and share content based on proximity and interests. It provides features like authentication, posting, commenting, real-time chat, geo-location-based user discovery, and newsletter engagement using modern web technologies.
+
 
 ---
 
