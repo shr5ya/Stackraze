@@ -111,7 +111,7 @@ async function handleSetUserGeodata(req, res) {
         });
       }
 
-      // ❗ Store in lat/long order
+      // Store in lat/long order
       setPayload["location.coordinates"] = [latitude, longitude];
     }
 
