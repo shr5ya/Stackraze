@@ -1,4 +1,8 @@
-# Stackraze
+# Stackraze - A Dev Community Platform
+
+**Stackraze**  is a full-stack community-driven social platform that enables users to connect, interact, and share content based on proximity and interests. It provides features like authentication, posting, commenting, real-time chat, geo-location-based user discovery, and newsletter engagement using modern web technologies.
+
+---
 
 ## Team Details
 
@@ -13,14 +17,8 @@
 ## Project Type
 Copyright
 
-
-
 ## Current Status
 Waiting
-
-
-**Stackraze**  is a full-stack community-driven social platform that enables users to connect, interact, and share content based on proximity and interests. It provides features like authentication, posting, commenting, real-time chat, geo-location-based user discovery, and newsletter engagement using modern web technologies.
-
 
 ---
 
