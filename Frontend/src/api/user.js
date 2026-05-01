@@ -1,1 +1,0 @@
-USER_AUTH_URL = ""
