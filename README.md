@@ -1,6 +1,24 @@
-# Stackraze
+# Stackraze - A Dev Community Platform
 
-**Stackraze** is a full-stack community social platform where people can share posts, connect with nearby users, bookmark content, comment, and build a profile — all in one place.
+**Stackraze**  is a full-stack community-driven social platform that enables users to connect, interact, and share content based on proximity and interests. It provides features like authentication, posting, commenting, real-time chat, geo-location-based user discovery, and newsletter engagement using modern web technologies.
+
+---
+
+## Team Details
+
+| Name | Roll Number |
+|------|------------|
+| Shreya Yadav | 2210990841 |
+| Palak Bisht | 2210990631 |
+| Tanisha Singla | 2210990893 |
+
+---
+
+## Project Type
+Copyright
+
+## Current Status
+Waiting
 
 ---
 
@@ -8,14 +26,16 @@
 
 | Feature | Description |
 |---|---|
-| Auth | JWT-based authentication with login, signup, and protected routes |
+| Auth | JWT-based authentication with login, signup, OTP verification, and protected routes |
 | Posts | Create, view, like, comment on, and delete posts with photo support |
 | Save Posts | Bookmark any post; saved posts accessible from your profile |
 | Comments | Expandable comment threads per post with avatar display |
 | Connect | Discover nearby users on an interactive MapLibre map |
+| Community | Real-time community chat and sidebar navigation for group interactions |
+| Newsletters | Browse, read, and engage with informative newsletters |
 | Profiles | Public profile pages with avatar, bio, own posts, and saved posts tabs |
-| Edit Profile | In-modal profile editor (name, username, email, about, avatar via Cloudinary) |
-| Contact | Contact/Feedback/Suggestion form with type selector |
+| Settings | Manage account preferences, location updates, edit profile, and account deletion |
+| Contact & FAQs | Contact/Feedback form and Frequently Asked Questions for support |
 | Dark Mode | System-aware dark/light mode toggle throughout the UI |
 | Geo Data | Users can set their location; proximity search powered by MongoDB 2dsphere index |
 
@@ -41,6 +61,7 @@
 | Node.js + Express 5 | REST API server |
 | MongoDB + Mongoose | Database & ODM |
 | JSON Web Token (JWT) | Stateless authentication |
+| Socket.io | Real-time WebSocket communication |
 | dotenv | Environment variable management |
 | nodemon | Dev auto-restart |
 | EJS | Server-side 404 view |
@@ -50,70 +71,74 @@
 
 ## Project Structure
 
-```
+```text
 Stackraze/
-├── Frontend/                  # React + Vite app
+├── Frontend/
 │   └── src/
-│       ├── pages/             # Page-level components
-│       │   ├── home.jsx       # Feed (paginated all posts)
-│       │   ├── profile.jsx    # User profile (public)
-│       │   ├── connect.jsx    # Nearby users map
-│       │   ├── contact.jsx    # Contact / feedback form
-│       │   ├── about.jsx      # About page
+│       ├── api/               # API call wrappers
+│       ├── assets/            # Static assets (images, videos, avatars, logos)
+│       ├── components/        # Reusable UI Components
+│       │   ├── about/         # About page sections (Hero, People, etc.)
+│       │   ├── AuthPages/     # Authentication components
+│       │   ├── community/     # CommunityChat, CommunitySidebar
+│       │   ├── Connect/       # MapConnect, NearbyUserCard, UpdateLocation
+│       │   ├── header/        # Navbar, Profile dropdown
+│       │   ├── newsletters/   # NewsCard, SkeletonCard, sample
+│       │   ├── post/          # Post cards, comments, upload, etc.
+│       │   ├── profile/       # Profile header, tabs, edit modal
+│       │   ├── settings/      # Settings options, location, delete account
+│       │   ├── ui/            # Specialized UI (theme toggler, map, grids)
+│       │   └── [root]         # CheckBoxes, ContactForm, Faqs, Sidebar, etc.
+│       ├── config/            # Configurations (api.js)
+│       ├── context/           # React Context (AuthContext, PopupContext)
+│       ├── hooks/             # Custom hooks (useAvatarUpload)
+│       ├── lib/               # Utility libraries
+│       ├── pages/             # Route Pages
+│       │   ├── about.jsx
+│       │   ├── Auth.jsx
+│       │   ├── comunity.jsx
+│       │   ├── connect.jsx
+│       │   ├── contact.jsx
+│       │   ├── home.jsx
 │       │   ├── Login.jsx
+│       │   ├── newsLetters.jsx
+│       │   ├── OtpVerification.jsx
+│       │   ├── profile.jsx
+│       │   ├── settings.jsx
 │       │   └── Signup.jsx
-│       ├── components/
-│       │   ├── post/
-│       │   │   ├── Post.jsx            # Full post card with all interactions
-│       │   │   ├── PostContent.jsx     # Rendered post text
-│       │   │   ├── PostMoreOptions.jsx # Delete / report dropdown
-│       │   │   ├── PostSkeleton.jsx    # Loading placeholder
-│       │   │   ├── postImages.jsx      # Image carousel
-│       │   │   ├── Comments.jsx        # Expandable comments section
-│       │   │   ├── SavePost.jsx        # Bookmark toggle button
-│       │   │   └── UploadPost.jsx      # Post creation form
-│       │   ├── profile/
-│       │   │   ├── profileTop.jsx      # Avatar, name, bio, edit button
-│       │   │   ├── UserPosts.jsx       # Posts / Saved tabs
-│       │   │   └── EditProfileModal.jsx
-│       │   ├── Connect/
-│       │   │   └── MapConnect.jsx      # MapLibre map + range selector
-│       │   ├── header/
-│       │   │   ├── navbar.jsx
-│       │   │   └── Profile.jsx         # Navbar avatar dropdown
-│       │   ├── about/                  # About page sections
-│       │   ├── Sidebar.jsx             # Navigation sidebar
-│       │   ├── ProtectedRoute.jsx      # Auth guard wrapper
-│       │   └── ThemeToggle.jsx
-│       ├── context/
-│       │   └── AuthContext.jsx         # Global auth state (user, token)
-│       ├── config/
-│       │   └── api.js                  # API_URL constant
-│       └── utils/
-│           └── avatarHelper.js         # Resolve avatar URL / preset name
+│       └── utils/             # Helper functions (avatarHelper, cloudinaryUpload)
 │
-└── Backend/                   # Express REST API
+└── Backend/
     └── src/
-        ├── models/
-        │   ├── user.js         # User schema
-        │   └── post.js         # Post + embedded Comment schema
-        ├── controllers/
-        │   ├── user/user.js    # Auth, profile, save/unsave
-        │   ├── post/post.js    # CRUD, likes, comments, isSaved flag
-        │   ├── connect/        # Geo-location handlers
-        │   └── gridArt/        # Grid art handlers
-        ├── routes/
-        │   └── user.js         # All user + post routes
-        ├── mildewares/
-        │   └── authMiddleware.js
-        └── app.js              # Express app setup
+        ├── config/            # Environment and passport configs
+        ├── controllers/       # Route controllers
+        │   ├── admin/
+        │   ├── connect/
+        │   ├── gridArt/
+        │   ├── newsletter/
+        │   ├── post/
+        │   ├── user/
+        │   └── community.js
+        ├── mildewares/        # Middlewares (authMiddleware, admin.js)
+        ├── models/            # Mongoose Schemas (user, post, community, message...)
+        ├── routes/            # Express Routes
+        │   ├── admin.js
+        │   ├── community.js
+        │   ├── news.js
+        │   ├── newsletter.js
+        │   └── user.js
+        ├── utils/             # Backend utilities (emailService)
+        ├── views/             # EJS templates (404.ejs)
+        ├── app.js             # Main Express app setup
+        ├── connectMongo.js    # DB connection logic
+        └── sockets.js         # Socket.io configuration
 ```
 
 ---
 
 ## API Reference
 
-All routes are prefixed with `/user`.
+All user routes are prefixed with `/user`. Admin and specific feature routes may have their own prefixes.
 
 ### Auth
 
@@ -121,9 +146,11 @@ All routes are prefixed with `/user`.
 |---|---|---|---|
 | `POST` | `/user/signup` | No | Register a new user |
 | `POST` | `/user/login` | No | Login and receive JWT token |
+| `POST` | `/user/verifyOTP` | No | Verify OTP for authentication |
 | `GET` | `/user/userData` | Yes | Get logged-in user's full data |
 | `PATCH` | `/user/updateData` | Yes | Update profile fields (name, username, email, avatar, about, password) |
 | `GET` | `/user/profile?username=` | No | Get public profile by username |
+| `DELETE`| `/user/deleteAccount` | Yes | Delete user account permanently |
 
 ### Posts
 
@@ -132,7 +159,7 @@ All routes are prefixed with `/user`.
 | `POST` | `/user/post/create` | Yes | Create a new post |
 | `GET` | `/user/post/allPosts?page=` | Yes | Paginated feed (10/page), includes `isSaved` flag per post |
 | `GET` | `/user/post/userposts/:username` | Yes | All posts by a specific user, includes `isSaved` flag |
-| `DELETE` | `/user/post/:id` | No | Delete a post by ID |
+| `DELETE` | `/user/post/:id` | Yes | Delete a post by ID |
 | `POST` | `/user/post/like/:id` | Yes | Toggle like/unlike on a post |
 | `GET` | `/user/post/comments/:id` | Yes | Fetch all comments for a post |
 | `POST` | `/user/post/comment/:id` | Yes | Add a comment to a post |
@@ -161,12 +188,14 @@ All routes are prefixed with `/user`.
 | `GET` | `/user/grid` | No | Fetch grid art entries |
 | `POST` | `/user/grid` | No | Add a grid art entry |
 
+*(Note: API reference for Community, Newsletters, and Admin routes are configured in their respective route files: `community.js`, `newsletter.js`, `admin.js`.)*
+
 ---
 
 ## Data Models
 
 ### User
-```
+```text
 name          String (max 50)
 username      String (unique, lowercase)
 email         String (unique, lowercase)
@@ -183,7 +212,7 @@ lastLogin     Date
 > `location.coordinates` is indexed as **2dsphere** for geo queries.
 
 ### Post
-```
+```text
 content       String (max 800, required)
 photos        [String]     -- image URLs
 author        ObjectId -> User
@@ -195,7 +224,7 @@ isPublic      Boolean
 ```
 
 ### Comment (embedded)
-```
+```text
 userId        ObjectId -> User
 username      String
 avatar        String
